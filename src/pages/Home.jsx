@@ -1,10 +1,12 @@
+import { useState, useEffect } from 'react'
 import { motion } from 'framer-motion'
 import Header from '../components/Header'
 import Hero from '../components/Hero'
 import Footer from '../components/Footer'
 import CurriculumFlow from '../components/CurriculumFlow'
 import Gallery from '../components/Gallery'
-import { instructor, instructor2 } from '../data/content'
+import { instructor as defaultInstructor, instructor2 as defaultInstructor2 } from '../data/content'
+import { supabase, isSupabaseReady } from '../lib/supabase'
 
 const inView = {
   hidden:  { opacity: 0, y: 24 },
@@ -16,6 +18,28 @@ const fadeUp = (delay = 0) => ({
 })
 
 export default function Home() {
+  const [instructors, setInstructors] = useState([defaultInstructor, defaultInstructor2])
+
+  useEffect(() => {
+    if (!isSupabaseReady) return
+    supabase
+      .from('instructors')
+      .select('*')
+      .order('slot', { ascending: true })
+      .then(({ data }) => {
+        if (data && data.length > 0) {
+          const mapped = data.map((d) => ({
+            name: d.name,
+            title: d.title,
+            photo: d.photo,
+            bio: d.bio,
+            careers: Array.isArray(d.careers) ? d.careers : [],
+          }))
+          setInstructors(mapped)
+        }
+      })
+  }, [])
+
   return (
     <div style={{ background: '#0A0A0A' }}>
       <Header />
@@ -53,8 +77,8 @@ export default function Home() {
               강사 소개
             </h2>
           </motion.div>
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '24px' }}>
-            {[instructor, instructor2].map((person, idx) => (
+          <div className="instructor-cards-grid">
+            {instructors.map((person, idx) => (
               <motion.div
                 key={person.name}
                 variants={fadeUp(idx * 0.12)}
@@ -72,7 +96,7 @@ export default function Home() {
                   <h3 style={{ fontSize: 'clamp(1.6rem, 2.5vw, 2.2rem)', fontWeight: 800, letterSpacing: '-0.04em', color: '#ffffff', lineHeight: 1, margin: 0 }}>
                     {person.name}
                   </h3>
-                  <p style={{ marginTop: '20px', fontSize: '15px', fontWeight: 500, color: 'rgba(255,255,255,0.4)', lineHeight: 1.4 }}>
+                  <p style={{ marginTop: '12px', fontSize: '15px', fontWeight: 500, color: 'rgba(255,255,255,0.4)', lineHeight: 1.4 }}>
                     {person.title}
                   </p>
                 </div>
@@ -87,8 +111,6 @@ export default function Home() {
       ═══════════════════════════════════════════════ */}
       <section id="works" style={{ background: '#000000', padding: '200px 0 220px' }}>
         <div className="container">
-
-          {/* 섹션 헤더 */}
           <motion.div
             variants={inView}
             initial="hidden"
@@ -96,41 +118,17 @@ export default function Home() {
             viewport={{ once: true, margin: '-60px' }}
             style={{ marginBottom: '72px' }}
           >
-            <p style={{
-              fontSize: '11px', fontWeight: 600,
-              letterSpacing: '0.25em', textTransform: 'uppercase',
-              color: 'rgba(255,255,255,0.3)',
-              fontFamily: "'Inter', sans-serif",
-              marginBottom: '20px',
-            }}>
+            <p style={{ fontSize: '11px', fontWeight: 600, letterSpacing: '0.25em', textTransform: 'uppercase', color: 'rgba(255,255,255,0.3)', fontFamily: "'Inter', sans-serif", marginBottom: '20px' }}>
               Student Works
             </p>
-            <h2 style={{
-              fontFamily: "'Inter', 'Pretendard', sans-serif",
-              fontSize: 'clamp(2rem, 4vw, 4rem)',
-              fontWeight: 900,
-              lineHeight: 0.95,
-              letterSpacing: '-0.04em',
-              color: '#ffffff',
-              margin: 0,
-            }}>
+            <h2 style={{ fontFamily: "'Inter', 'Pretendard', sans-serif", fontSize: 'clamp(2rem, 4vw, 4rem)', fontWeight: 900, lineHeight: 0.95, letterSpacing: '-0.04em', color: '#ffffff', margin: 0 }}>
               Portfolio
             </h2>
-            <p style={{
-              marginTop: '20px',
-              fontSize: 'clamp(13px, 1.2vw, 15px)',
-              fontWeight: 400,
-              lineHeight: 1.8,
-              color: 'rgba(255,255,255,0.35)',
-              fontFamily: "'Pretendard', sans-serif",
-            }}>
+            <p style={{ marginTop: '20px', fontSize: 'clamp(13px, 1.2vw, 15px)', fontWeight: 400, lineHeight: 1.8, color: 'rgba(255,255,255,0.35)', fontFamily: "'Pretendard', sans-serif" }}>
               수강생들이 직접 만든 포트폴리오 작업물입니다
             </p>
           </motion.div>
-
-          {/* 갤러리 */}
           <Gallery />
-
         </div>
       </section>
 

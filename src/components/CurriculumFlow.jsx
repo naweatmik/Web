@@ -1,6 +1,7 @@
-import { useRef } from 'react'
+import { useRef, useState, useEffect } from 'react'
 import { motion, useScroll, useTransform } from 'framer-motion'
-import { curriculum } from '../data/content'
+import { curriculum as defaultCurriculum } from '../data/content'
+import { supabase, isSupabaseReady } from '../lib/supabase'
 
 const groups = [
   { label: '선수과목',   color: '#EF4444', steps: [1] },
@@ -11,6 +12,18 @@ const groups = [
 
 export default function CurriculumFlow() {
   const sectionRef = useRef(null)
+  const [curriculum, setCurriculum] = useState(defaultCurriculum)
+
+  useEffect(() => {
+    if (!isSupabaseReady) return
+    supabase
+      .from('curriculum')
+      .select('*')
+      .order('step', { ascending: true })
+      .then(({ data }) => {
+        if (data && data.length > 0) setCurriculum(data)
+      })
+  }, [])
 
   const { scrollYProgress } = useScroll({
     target: sectionRef,

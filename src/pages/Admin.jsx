@@ -1,46 +1,110 @@
 import { useState, useEffect } from 'react'
 import { supabase, isSupabaseReady } from '../lib/supabase'
-import { LogOut, Upload, Trash2, Loader2, X } from 'lucide-react'
+import { curriculum as defaultCurriculum } from '../data/content'
+import { LogOut, Upload, Trash2, Loader2, Save } from 'lucide-react'
 
-export default function Admin() {
-  if (!isSupabaseReady) {
-    return (
-      <div className="min-h-screen bg-[#0A0A0A] flex items-center justify-center px-4 text-center">
-        <div>
-          <p className="text-white text-xl font-bold mb-3">Supabase 설정 필요</p>
-          <p className="text-white/40 text-sm">.env 파일에 VITE_SUPABASE_URL과 VITE_SUPABASE_ANON_KEY를 입력하세요.</p>
-        </div>
-      </div>
-    )
-  }
-  const [session, setSession] = useState(null)
-  const [email, setEmail] = useState('')
-  const [password, setPassword] = useState('')
-  const [authError, setAuthError] = useState('')
-  const [authLoading, setAuthLoading] = useState(false)
+// ─── Style tokens ─────────────────────────────────────────────────────────────
+const S = {
+  page: {
+    minHeight: '100vh',
+    background: '#0A0A0A',
+    color: '#ffffff',
+    fontFamily: 'inherit',
+  },
+  inner: {
+    maxWidth: 960,
+    margin: '0 auto',
+    padding: '48px 24px 80px',
+  },
+  card: {
+    background: 'rgba(255,255,255,0.05)',
+    border: '1px solid rgba(255,255,255,0.1)',
+    borderRadius: 16,
+    padding: 24,
+  },
+  input: {
+    width: '100%',
+    background: 'rgba(255,255,255,0.05)',
+    border: '1px solid rgba(255,255,255,0.1)',
+    borderRadius: 10,
+    padding: '10px 14px',
+    color: '#fff',
+    fontSize: 14,
+    outline: 'none',
+    boxSizing: 'border-box',
+  },
+  label: {
+    display: 'block',
+    fontSize: 11,
+    color: 'rgba(255,255,255,0.45)',
+    marginBottom: 6,
+    textTransform: 'uppercase',
+    letterSpacing: '0.05em',
+  },
+  btnPrimary: {
+    display: 'inline-flex',
+    alignItems: 'center',
+    gap: 8,
+    background: '#ffffff',
+    color: '#000',
+    border: 'none',
+    borderRadius: 10,
+    padding: '10px 20px',
+    fontWeight: 700,
+    fontSize: 14,
+    cursor: 'pointer',
+  },
+  btnDanger: {
+    display: 'inline-flex',
+    alignItems: 'center',
+    gap: 6,
+    background: 'rgba(239,68,68,0.15)',
+    color: '#f87171',
+    border: '1px solid rgba(239,68,68,0.3)',
+    borderRadius: 8,
+    padding: '6px 12px',
+    fontSize: 13,
+    cursor: 'pointer',
+  },
+  sectionTitle: {
+    fontSize: 18,
+    fontWeight: 700,
+    marginBottom: 20,
+    marginTop: 0,
+  },
+}
 
+// ─── Reusable field wrapper ───────────────────────────────────────────────────
+function Field({ label, children }) {
+  return (
+    <div style={{ marginBottom: 14 }}>
+      {label && <label style={S.label}>{label}</label>}
+      {children}
+    </div>
+  )
+}
+
+// ─── Feedback messages ────────────────────────────────────────────────────────
+function Msg({ error, success }) {
+  if (error) return <p style={{ color: '#f87171', fontSize: 13, margin: '8px 0 0' }}>{error}</p>
+  if (success) return <p style={{ color: '#4ade80', fontSize: 13, margin: '8px 0 0' }}>{success}</p>
+  return null
+}
+
+// ─── Tab 1 – 작업물 ────────────────────────────────────────────────────────────
+function WorksTab() {
   const [works, setWorks] = useState([])
-  const [worksLoading, setWorksLoading] = useState(false)
+  const [loading, setLoading] = useState(false)
   const [file, setFile] = useState(null)
   const [link, setLink] = useState('')
   const [uploading, setUploading] = useState(false)
-  const [uploadError, setUploadError] = useState('')
-  const [successMsg, setSuccessMsg] = useState('')
+  const [error, setError] = useState('')
+  const [success, setSuccess] = useState('')
 
-  useEffect(() => {
-    supabase.auth.getSession().then(({ data: { session } }) => {
-      setSession(session)
-      if (session) fetchWorks()
-    })
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
-      setSession(session)
-      if (session) fetchWorks()
-    })
-    return () => subscription.unsubscribe()
-  }, [])
+  useEffect(() => { fetchWorks() }, [])
 
   async function fetchWorks() {
-    setWorksLoading(true)
+    setLoading(true)
     try {
       const { data, error } = await supabase
         .from('works')
@@ -51,35 +115,16 @@ export default function Admin() {
     } catch (err) {
       console.error(err)
     } finally {
-      setWorksLoading(false)
+      setLoading(false)
     }
-  }
-
-  async function handleLogin(e) {
-    e.preventDefault()
-    setAuthLoading(true)
-    setAuthError('')
-    try {
-      const { error } = await supabase.auth.signInWithPassword({ email, password })
-      if (error) throw error
-    } catch (err) {
-      setAuthError(err.message)
-    } finally {
-      setAuthLoading(false)
-    }
-  }
-
-  async function handleLogout() {
-    await supabase.auth.signOut()
-    setWorks([])
   }
 
   async function handleUpload(e) {
     e.preventDefault()
     if (!file) return
     setUploading(true)
-    setUploadError('')
-    setSuccessMsg('')
+    setError('')
+    setSuccess('')
     try {
       const ext = file.name.split('.').pop()
       const fileName = `${Date.now()}.${ext}`
@@ -97,13 +142,13 @@ export default function Admin() {
         .insert({ image_url: publicUrl, link: link || null })
       if (dbError) throw dbError
 
-      setSuccessMsg('등록 완료!')
+      setSuccess('등록 완료!')
       setFile(null)
       setLink('')
       e.target.reset()
       fetchWorks()
     } catch (err) {
-      setUploadError(err.message)
+      setError(err.message)
     } finally {
       setUploading(false)
     }
@@ -122,19 +167,445 @@ export default function Admin() {
     }
   }
 
+  return (
+    <div>
+      {/* Upload form */}
+      <div style={{ ...S.card, marginBottom: 32 }}>
+        <h2 style={S.sectionTitle}>작업물 추가</h2>
+        <form onSubmit={handleUpload}>
+          <Field label="이미지 파일 *">
+            <input
+              type="file"
+              accept="image/*"
+              onChange={(e) => setFile(e.target.files[0])}
+              required
+              style={{ color: 'rgba(255,255,255,0.6)', fontSize: 13, cursor: 'pointer' }}
+            />
+          </Field>
+          <Field label="포트폴리오 링크 (선택)">
+            <input
+              type="url"
+              placeholder="https://..."
+              value={link}
+              onChange={(e) => setLink(e.target.value)}
+              style={S.input}
+            />
+          </Field>
+          <Msg error={error} success={success} />
+          <button
+            type="submit"
+            disabled={uploading || !file}
+            style={{ ...S.btnPrimary, marginTop: 16, opacity: uploading || !file ? 0.5 : 1 }}
+          >
+            {uploading ? <Loader2 size={15} style={{ animation: 'spin 1s linear infinite' }} /> : <Upload size={15} />}
+            {uploading ? '업로드 중...' : '등록'}
+          </button>
+        </form>
+      </div>
+
+      {/* Works grid */}
+      <h2 style={S.sectionTitle}>등록된 작업물 ({works.length}개)</h2>
+      {loading ? (
+        <p style={{ color: 'rgba(255,255,255,0.4)', fontSize: 14 }}>불러오는 중...</p>
+      ) : works.length === 0 ? (
+        <div style={{ ...S.card, textAlign: 'center', color: 'rgba(255,255,255,0.3)', fontSize: 14, padding: '48px 24px' }}>
+          등록된 작업물이 없습니다
+        </div>
+      ) : (
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(200px, 1fr))', gap: 16 }}>
+          {works.map((work) => (
+            <div key={work.id} style={{ ...S.card, padding: 0, overflow: 'hidden' }}>
+              <img
+                src={work.image_url}
+                alt="작업물"
+                style={{ width: '100%', height: 160, objectFit: 'cover', display: 'block' }}
+              />
+              <div style={{ padding: '10px 12px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 8 }}>
+                {work.link ? (
+                  <a
+                    href={work.link}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    style={{ color: '#60a5fa', fontSize: 12, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', maxWidth: 120 }}
+                  >
+                    링크 열기
+                  </a>
+                ) : (
+                  <span style={{ color: 'rgba(255,255,255,0.25)', fontSize: 12 }}>링크 없음</span>
+                )}
+                <button onClick={() => handleDelete(work)} style={S.btnDanger}>
+                  <Trash2 size={13} />
+                </button>
+              </div>
+            </div>
+          ))}
+        </div>
+      )}
+    </div>
+  )
+}
+
+// ─── Tab 2 – 강사 정보 ─────────────────────────────────────────────────────────
+const emptyInstructor = { name: '', title: '', photo: '', bio: '', careers: '' }
+
+function InstructorCard({ slot, label }) {
+  const [form, setForm] = useState(emptyInstructor)
+  const [saving, setSaving] = useState(false)
+  const [error, setError] = useState('')
+  const [success, setSuccess] = useState('')
+
+  useEffect(() => {
+    async function load() {
+      try {
+        const { data, error } = await supabase
+          .from('instructors')
+          .select('*')
+          .eq('slot', slot)
+          .single()
+        if (error && error.code !== 'PGRST116') throw error
+        if (data) {
+          setForm({
+            name: data.name || '',
+            title: data.title || '',
+            photo: data.photo || '',
+            bio: data.bio || '',
+            careers: Array.isArray(data.careers) ? data.careers.join('\n') : (data.careers || ''),
+          })
+        }
+      } catch (err) {
+        console.error(err)
+      }
+    }
+    load()
+  }, [slot])
+
+  function update(field, val) {
+    setForm((prev) => ({ ...prev, [field]: val }))
+  }
+
+  async function handleSave() {
+    setSaving(true)
+    setError('')
+    setSuccess('')
+    try {
+      const careersArr = form.careers
+        .split('\n')
+        .map((s) => s.trim())
+        .filter(Boolean)
+
+      const { error } = await supabase.from('instructors').upsert(
+        {
+          slot,
+          name: form.name,
+          title: form.title,
+          photo: form.photo,
+          bio: form.bio,
+          careers: careersArr,
+        },
+        { onConflict: 'slot' }
+      )
+      if (error) throw error
+      setSuccess('저장 완료!')
+    } catch (err) {
+      setError(err.message)
+    } finally {
+      setSaving(false)
+    }
+  }
+
+  return (
+    <div style={{ ...S.card, flex: 1 }}>
+      <h3 style={{ margin: '0 0 18px', fontSize: 16, fontWeight: 700 }}>{label}</h3>
+      <Field label="이름">
+        <input style={S.input} value={form.name} onChange={(e) => update('name', e.target.value)} placeholder="홍길동" />
+      </Field>
+      <Field label="직함">
+        <input style={S.input} value={form.title} onChange={(e) => update('title', e.target.value)} placeholder="웹 UIUX 전임강사" />
+      </Field>
+      <Field label="사진 URL">
+        <input style={S.input} value={form.photo} onChange={(e) => update('photo', e.target.value)} placeholder="https://..." />
+      </Field>
+      <Field label="소개">
+        <textarea
+          style={{ ...S.input, resize: 'vertical', minHeight: 80 }}
+          value={form.bio}
+          onChange={(e) => update('bio', e.target.value)}
+          placeholder="강사 소개 텍스트"
+        />
+      </Field>
+      <Field label="경력 (한 줄에 하나씩)">
+        <textarea
+          style={{ ...S.input, resize: 'vertical', minHeight: 80 }}
+          value={form.careers}
+          onChange={(e) => update('careers', e.target.value)}
+          placeholder={'現 SBS컴퓨터학원 강사\n前 웹 에이전시 디자이너'}
+        />
+      </Field>
+      <Msg error={error} success={success} />
+      <button
+        onClick={handleSave}
+        disabled={saving}
+        style={{ ...S.btnPrimary, marginTop: 16, opacity: saving ? 0.5 : 1 }}
+      >
+        {saving ? <Loader2 size={15} style={{ animation: 'spin 1s linear infinite' }} /> : <Save size={15} />}
+        {saving ? '저장 중...' : '저장'}
+      </button>
+    </div>
+  )
+}
+
+function InstructorsTab() {
+  return (
+    <div>
+      <h2 style={S.sectionTitle}>강사 정보</h2>
+      <div style={{ display: 'flex', gap: 20, flexWrap: 'wrap' }}>
+        <InstructorCard slot={1} label="강사 1" />
+        <InstructorCard slot={2} label="강사 2" />
+      </div>
+    </div>
+  )
+}
+
+// ─── Tab 3 – 커리큘럼 ──────────────────────────────────────────────────────────
+function CurriculumTab() {
+  const [rows, setRows] = useState([])
+  const [loading, setLoading] = useState(true)
+  const [saving, setSaving] = useState(false)
+  const [error, setError] = useState('')
+  const [success, setSuccess] = useState('')
+
+  useEffect(() => {
+    async function load() {
+      try {
+        const { data, error } = await supabase
+          .from('curriculum')
+          .select('*')
+          .order('step', { ascending: true })
+        if (error) throw error
+        if (data && data.length > 0) {
+          setRows(data)
+        } else {
+          // pre-fill from local default
+          setRows(
+            defaultCurriculum.map((c) => ({
+              step: c.step,
+              title: c.title,
+              tag: c.tag,
+              color: c.color,
+            }))
+          )
+        }
+      } catch (err) {
+        console.error(err)
+        setRows(
+          defaultCurriculum.map((c) => ({
+            step: c.step,
+            title: c.title,
+            tag: c.tag,
+            color: c.color,
+          }))
+        )
+      } finally {
+        setLoading(false)
+      }
+    }
+    load()
+  }, [])
+
+  function updateRow(index, field, value) {
+    setRows((prev) => {
+      const next = [...prev]
+      next[index] = { ...next[index], [field]: value }
+      return next
+    })
+  }
+
+  async function handleSaveAll() {
+    setSaving(true)
+    setError('')
+    setSuccess('')
+    try {
+      const payload = rows.map((r) => ({
+        step: r.step,
+        title: r.title,
+        tag: r.tag,
+        color: r.color,
+        ...(r.id ? { id: r.id } : {}),
+      }))
+      const { error } = await supabase
+        .from('curriculum')
+        .upsert(payload, { onConflict: 'step' })
+      if (error) throw error
+      setSuccess('전체 저장 완료!')
+    } catch (err) {
+      setError(err.message)
+    } finally {
+      setSaving(false)
+    }
+  }
+
+  if (loading) {
+    return <p style={{ color: 'rgba(255,255,255,0.4)', fontSize: 14 }}>불러오는 중...</p>
+  }
+
+  return (
+    <div>
+      {/* Header row */}
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 20 }}>
+        <h2 style={{ ...S.sectionTitle, marginBottom: 0 }}>커리큘럼</h2>
+        <button
+          onClick={handleSaveAll}
+          disabled={saving}
+          style={{ ...S.btnPrimary, opacity: saving ? 0.5 : 1 }}
+        >
+          {saving ? <Loader2 size={15} style={{ animation: 'spin 1s linear infinite' }} /> : <Save size={15} />}
+          {saving ? '저장 중...' : '전체 저장'}
+        </button>
+      </div>
+      <Msg error={error} success={success} />
+
+      {/* Column headers */}
+      <div style={{
+        display: 'grid',
+        gridTemplateColumns: '48px 1fr 120px 56px',
+        gap: 10,
+        padding: '8px 14px',
+        color: 'rgba(255,255,255,0.35)',
+        fontSize: 11,
+        textTransform: 'uppercase',
+        letterSpacing: '0.05em',
+        marginTop: 12,
+      }}>
+        <span>Step</span>
+        <span>제목</span>
+        <span>태그</span>
+        <span>색상</span>
+      </div>
+
+      {/* Rows */}
+      <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+        {rows.map((row, i) => (
+          <div
+            key={row.step}
+            style={{
+              display: 'grid',
+              gridTemplateColumns: '48px 1fr 120px 56px',
+              gap: 10,
+              alignItems: 'center',
+              ...S.card,
+              padding: '12px 14px',
+            }}
+          >
+            <span style={{
+              fontSize: 15,
+              fontWeight: 700,
+              color: row.color || 'rgba(255,255,255,0.6)',
+              textAlign: 'center',
+            }}>
+              {row.step}
+            </span>
+            <input
+              style={{ ...S.input, margin: 0 }}
+              value={row.title}
+              onChange={(e) => updateRow(i, 'title', e.target.value)}
+              placeholder="제목"
+            />
+            <input
+              style={{ ...S.input, margin: 0 }}
+              value={row.tag}
+              onChange={(e) => updateRow(i, 'tag', e.target.value)}
+              placeholder="태그"
+            />
+            <input
+              type="color"
+              value={row.color || '#ffffff'}
+              onChange={(e) => updateRow(i, 'color', e.target.value)}
+              style={{
+                width: 36,
+                height: 36,
+                border: '1px solid rgba(255,255,255,0.15)',
+                borderRadius: 6,
+                cursor: 'pointer',
+                background: 'transparent',
+                padding: 2,
+              }}
+              title="색상 선택"
+            />
+          </div>
+        ))}
+      </div>
+    </div>
+  )
+}
+
+// ─── Main Admin component ──────────────────────────────────────────────────────
+const TABS = [
+  { id: 'works', label: '작업물' },
+  { id: 'instructors', label: '강사 정보' },
+  { id: 'curriculum', label: '커리큘럼' },
+]
+
+export default function Admin() {
+  if (!isSupabaseReady) {
+    return (
+      <div style={{ ...S.page, display: 'flex', alignItems: 'center', justifyContent: 'center', textAlign: 'center', padding: 24 }}>
+        <div>
+          <p style={{ fontSize: 20, fontWeight: 700, marginBottom: 10 }}>Supabase 설정 필요</p>
+          <p style={{ color: 'rgba(255,255,255,0.4)', fontSize: 14 }}>
+            .env 파일에 VITE_SUPABASE_URL과 VITE_SUPABASE_ANON_KEY를 입력하세요.
+          </p>
+        </div>
+      </div>
+    )
+  }
+
+  const [session, setSession] = useState(null)
+  const [email, setEmail] = useState('')
+  const [password, setPassword] = useState('')
+  const [authError, setAuthError] = useState('')
+  const [authLoading, setAuthLoading] = useState(false)
+  const [activeTab, setActiveTab] = useState('works')
+
+  useEffect(() => {
+    supabase.auth.getSession().then(({ data: { session } }) => setSession(session))
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
+      setSession(session)
+    })
+    return () => subscription.unsubscribe()
+  }, [])
+
+  async function handleLogin(e) {
+    e.preventDefault()
+    setAuthLoading(true)
+    setAuthError('')
+    try {
+      const { error } = await supabase.auth.signInWithPassword({ email, password })
+      if (error) throw error
+    } catch (err) {
+      setAuthError(err.message)
+    } finally {
+      setAuthLoading(false)
+    }
+  }
+
+  async function handleLogout() {
+    await supabase.auth.signOut()
+  }
+
+  // ── Login screen ──────────────────────────────────────────────────────────────
   if (!session) {
     return (
-      <div className="min-h-screen bg-[#0A0A0A] flex items-center justify-center px-4">
-        <div className="w-full max-w-sm">
-          <h1 className="text-white text-2xl font-black mb-8">관리자 로그인</h1>
-          <form onSubmit={handleLogin} className="space-y-4">
+      <div style={{ ...S.page, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 24 }}>
+        <div style={{ width: '100%', maxWidth: 360 }}>
+          <h1 style={{ fontSize: 24, fontWeight: 900, marginBottom: 32 }}>관리자 로그인</h1>
+          <form onSubmit={handleLogin} style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
             <input
               type="email"
               placeholder="이메일"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               required
-              className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white placeholder-white/30 outline-none focus:border-white/30 transition-colors"
+              style={S.input}
             />
             <input
               type="password"
@@ -142,15 +613,15 @@ export default function Admin() {
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               required
-              className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white placeholder-white/30 outline-none focus:border-white/30 transition-colors"
+              style={S.input}
             />
-            {authError && <p className="text-red-400 text-sm">{authError}</p>}
+            {authError && <p style={{ color: '#f87171', fontSize: 13 }}>{authError}</p>}
             <button
               type="submit"
               disabled={authLoading}
-              className="w-full bg-white text-black font-bold py-3 rounded-xl hover:bg-white/90 transition-colors disabled:opacity-50 flex items-center justify-center gap-2"
+              style={{ ...S.btnPrimary, justifyContent: 'center', padding: '12px 20px', opacity: authLoading ? 0.5 : 1 }}
             >
-              {authLoading ? <Loader2 size={16} className="animate-spin" /> : null}
+              {authLoading && <Loader2 size={15} style={{ animation: 'spin 1s linear infinite' }} />}
               로그인
             </button>
           </form>
@@ -159,102 +630,75 @@ export default function Admin() {
     )
   }
 
+  // ── Authenticated layout ───────────────────────────────────────────────────────
   return (
-    <div className="min-h-screen bg-[#0A0A0A] text-white">
-      <div className="max-w-4xl mx-auto px-6 py-12">
+    <div style={S.page}>
+      <div style={S.inner}>
         {/* Header */}
-        <div className="flex items-center justify-between mb-12">
-          <h1 className="text-2xl font-black">관리자 페이지</h1>
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 36 }}>
+          <h1 style={{ fontSize: 22, fontWeight: 900, margin: 0 }}>관리자 페이지</h1>
           <button
             onClick={handleLogout}
-            className="flex items-center gap-2 text-white/50 hover:text-white text-sm transition-colors"
+            style={{
+              display: 'inline-flex',
+              alignItems: 'center',
+              gap: 6,
+              background: 'none',
+              border: 'none',
+              color: 'rgba(255,255,255,0.45)',
+              cursor: 'pointer',
+              fontSize: 13,
+            }}
           >
-            <LogOut size={16} />
+            <LogOut size={15} />
             로그아웃
           </button>
         </div>
 
-        {/* Upload form */}
-        <div className="bg-white/5 rounded-2xl p-6 mb-10 border border-white/10">
-          <h2 className="font-bold text-lg mb-6">작업물 추가</h2>
-          <form onSubmit={handleUpload} className="space-y-4">
-            <div>
-              <label className="text-white/50 text-xs mb-2 block">이미지 파일 *</label>
-              <input
-                type="file"
-                accept="image/*"
-                onChange={(e) => setFile(e.target.files[0])}
-                required
-                className="w-full text-white/70 text-sm file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-medium file:bg-white/10 file:text-white hover:file:bg-white/20 transition-colors cursor-pointer"
-              />
-            </div>
-            <div>
-              <label className="text-white/50 text-xs mb-2 block">포트폴리오 링크 (선택)</label>
-              <input
-                type="url"
-                placeholder="https://..."
-                value={link}
-                onChange={(e) => setLink(e.target.value)}
-                className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white placeholder-white/30 outline-none focus:border-white/30 transition-colors"
-              />
-            </div>
-            {uploadError && <p className="text-red-400 text-sm">{uploadError}</p>}
-            {successMsg && <p className="text-green-400 text-sm">{successMsg}</p>}
+        {/* Tab bar */}
+        <div style={{
+          display: 'flex',
+          gap: 4,
+          marginBottom: 32,
+          background: 'rgba(255,255,255,0.05)',
+          borderRadius: 12,
+          padding: 4,
+          width: 'fit-content',
+        }}>
+          {TABS.map((tab) => (
             <button
-              type="submit"
-              disabled={uploading || !file}
-              className="flex items-center gap-2 bg-white text-black font-bold px-6 py-3 rounded-xl hover:bg-white/90 transition-colors disabled:opacity-50"
+              key={tab.id}
+              onClick={() => setActiveTab(tab.id)}
+              style={{
+                padding: '8px 20px',
+                borderRadius: 9,
+                border: 'none',
+                cursor: 'pointer',
+                fontSize: 14,
+                fontWeight: activeTab === tab.id ? 700 : 400,
+                background: activeTab === tab.id ? '#ffffff' : 'transparent',
+                color: activeTab === tab.id ? '#000000' : 'rgba(255,255,255,0.5)',
+                transition: 'all 0.15s ease',
+              }}
             >
-              {uploading ? <Loader2 size={16} className="animate-spin" /> : <Upload size={16} />}
-              {uploading ? '업로드 중...' : '등록'}
+              {tab.label}
             </button>
-          </form>
+          ))}
         </div>
 
-        {/* Works list */}
-        <div>
-          <h2 className="font-bold text-lg mb-6">등록된 작업물 ({works.length}개)</h2>
-          {worksLoading ? (
-            <div className="text-white/40 text-sm">불러오는 중...</div>
-          ) : works.length === 0 ? (
-            <div className="text-white/30 text-sm py-8 text-center border border-white/10 rounded-2xl">
-              등록된 작업물이 없습니다
-            </div>
-          ) : (
-            <div className="grid sm:grid-cols-2 md:grid-cols-3 gap-4">
-              {works.map((work) => (
-                <div key={work.id} className="bg-white/5 rounded-xl overflow-hidden border border-white/10">
-                  <img
-                    src={work.image_url}
-                    alt="작업물"
-                    className="w-full h-40 object-cover"
-                  />
-                  <div className="p-3 flex items-center justify-between">
-                    {work.link ? (
-                      <a
-                        href={work.link}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="text-blue-400 text-xs truncate max-w-[140px] hover:underline"
-                      >
-                        링크 열기
-                      </a>
-                    ) : (
-                      <span className="text-white/30 text-xs">링크 없음</span>
-                    )}
-                    <button
-                      onClick={() => handleDelete(work)}
-                      className="text-red-400 hover:text-red-300 transition-colors ml-2 flex-shrink-0"
-                    >
-                      <Trash2 size={16} />
-                    </button>
-                  </div>
-                </div>
-              ))}
-            </div>
-          )}
-        </div>
+        {/* Tab content */}
+        {activeTab === 'works' && <WorksTab />}
+        {activeTab === 'instructors' && <InstructorsTab />}
+        {activeTab === 'curriculum' && <CurriculumTab />}
       </div>
+
+      {/* Keyframes for spinner */}
+      <style>{`
+        @keyframes spin {
+          from { transform: rotate(0deg); }
+          to { transform: rotate(360deg); }
+        }
+      `}</style>
     </div>
   )
 }
