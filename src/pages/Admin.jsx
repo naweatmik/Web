@@ -1,7 +1,12 @@
 import { useState, useEffect } from 'react'
 import { supabase, isSupabaseReady } from '../lib/supabase'
-import { curriculum as defaultCurriculum } from '../data/content'
-import { LogOut, Upload, Trash2, Loader2, Save } from 'lucide-react'
+import { curriculum as defaultCurriculum, instructor as defaultInstructor1, instructor2 as defaultInstructor2 } from '../data/content'
+import { LogOut, Upload, Trash2, Loader2, Save, Plus } from 'lucide-react'
+
+const defaultInstructors = {
+  1: defaultInstructor1,
+  2: defaultInstructor2,
+}
 
 // ─── Style tokens ─────────────────────────────────────────────────────────────
 const S = {
@@ -263,17 +268,23 @@ function InstructorCard({ slot, label }) {
           .eq('slot', slot)
           .single()
         if (error && error.code !== 'PGRST116') throw error
-        if (data) {
-          setForm({
-            name: data.name || '',
-            title: data.title || '',
-            photo: data.photo || '',
-            bio: data.bio || '',
-            careers: Array.isArray(data.careers) ? data.careers.join('\n') : (data.careers || ''),
-          })
-        }
+        const src = data || defaultInstructors[slot] || {}
+        setForm({
+          name: src.name || '',
+          title: src.title || '',
+          photo: src.photo || '',
+          bio: src.bio || '',
+          careers: Array.isArray(src.careers) ? src.careers.join('\n') : (src.careers || ''),
+        })
       } catch (err) {
-        console.error(err)
+        const src = defaultInstructors[slot] || {}
+        setForm({
+          name: src.name || '',
+          title: src.title || '',
+          photo: src.photo || '',
+          bio: src.bio || '',
+          careers: Array.isArray(src.careers) ? src.careers.join('\n') : '',
+        })
       }
     }
     load()
@@ -420,6 +431,25 @@ function CurriculumTab() {
     })
   }
 
+  function addRow() {
+    const nextStep = rows.length > 0 ? Math.max(...rows.map((r) => r.step)) + 1 : 1
+    setRows((prev) => [...prev, { step: nextStep, title: '', tag: '', color: '#3B82F6' }])
+  }
+
+  async function deleteRow(index) {
+    const row = rows[index]
+    if (!confirm(`Step ${row.step} "${row.title}" 을 삭제하시겠습니까?`)) return
+    try {
+      if (row.id) {
+        const { error } = await supabase.from('curriculum').delete().eq('id', row.id)
+        if (error) throw error
+      }
+      setRows((prev) => prev.filter((_, i) => i !== index))
+    } catch (err) {
+      alert('삭제 실패: ' + err.message)
+    }
+  }
+
   async function handleSaveAll() {
     setSaving(true)
     setError('')
@@ -453,21 +483,29 @@ function CurriculumTab() {
       {/* Header row */}
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 20 }}>
         <h2 style={{ ...S.sectionTitle, marginBottom: 0 }}>커리큘럼</h2>
-        <button
-          onClick={handleSaveAll}
-          disabled={saving}
-          style={{ ...S.btnPrimary, opacity: saving ? 0.5 : 1 }}
-        >
-          {saving ? <Loader2 size={15} style={{ animation: 'spin 1s linear infinite' }} /> : <Save size={15} />}
-          {saving ? '저장 중...' : '전체 저장'}
-        </button>
+        <div style={{ display: 'flex', gap: 8 }}>
+          <button
+            onClick={addRow}
+            style={{ ...S.btnPrimary, background: 'rgba(255,255,255,0.1)', color: '#fff' }}
+          >
+            <Plus size={15} /> 추가
+          </button>
+          <button
+            onClick={handleSaveAll}
+            disabled={saving}
+            style={{ ...S.btnPrimary, opacity: saving ? 0.5 : 1 }}
+          >
+            {saving ? <Loader2 size={15} style={{ animation: 'spin 1s linear infinite' }} /> : <Save size={15} />}
+            {saving ? '저장 중...' : '전체 저장'}
+          </button>
+        </div>
       </div>
       <Msg error={error} success={success} />
 
       {/* Column headers */}
       <div style={{
         display: 'grid',
-        gridTemplateColumns: '48px 1fr 120px 56px',
+        gridTemplateColumns: '48px 1fr 120px 56px 40px',
         gap: 10,
         padding: '8px 14px',
         color: 'rgba(255,255,255,0.35)',
@@ -480,30 +518,29 @@ function CurriculumTab() {
         <span>제목</span>
         <span>태그</span>
         <span>색상</span>
+        <span />
       </div>
 
       {/* Rows */}
       <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
         {rows.map((row, i) => (
           <div
-            key={row.step}
+            key={i}
             style={{
               display: 'grid',
-              gridTemplateColumns: '48px 1fr 120px 56px',
+              gridTemplateColumns: '48px 1fr 120px 56px 40px',
               gap: 10,
               alignItems: 'center',
               ...S.card,
               padding: '12px 14px',
             }}
           >
-            <span style={{
-              fontSize: 15,
-              fontWeight: 700,
-              color: row.color || 'rgba(255,255,255,0.6)',
-              textAlign: 'center',
-            }}>
-              {row.step}
-            </span>
+            <input
+              type="number"
+              style={{ ...S.input, margin: 0, textAlign: 'center', fontWeight: 700, color: row.color || '#fff' }}
+              value={row.step}
+              onChange={(e) => updateRow(i, 'step', Number(e.target.value))}
+            />
             <input
               style={{ ...S.input, margin: 0 }}
               value={row.title}
@@ -520,17 +557,11 @@ function CurriculumTab() {
               type="color"
               value={row.color || '#ffffff'}
               onChange={(e) => updateRow(i, 'color', e.target.value)}
-              style={{
-                width: 36,
-                height: 36,
-                border: '1px solid rgba(255,255,255,0.15)',
-                borderRadius: 6,
-                cursor: 'pointer',
-                background: 'transparent',
-                padding: 2,
-              }}
-              title="색상 선택"
+              style={{ width: 36, height: 36, border: '1px solid rgba(255,255,255,0.15)', borderRadius: 6, cursor: 'pointer', background: 'transparent', padding: 2 }}
             />
+            <button onClick={() => deleteRow(i)} style={{ ...S.btnDanger, padding: '6px 8px' }}>
+              <Trash2 size={13} />
+            </button>
           </div>
         ))}
       </div>

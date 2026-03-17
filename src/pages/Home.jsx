@@ -109,7 +109,7 @@ export default function Home() {
       {/* ═══════════════════════════════════════════════
           WORKS
       ═══════════════════════════════════════════════ */}
-      <section id="works" style={{ background: '#000000' }}>
+      <section id="works" style={{ background: '#000000', paddingBottom: '220px' }}>
         <div className="container" style={{ paddingTop: '200px', paddingBottom: '80px' }}>
           <motion.div
             variants={inView}
