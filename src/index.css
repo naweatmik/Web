@@ -1,0 +1,379 @@
+@import url('https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css');
+@import "tailwindcss";
+
+/* ── Playfair Display 로컬 폰트 ── */
+@font-face {
+  font-family: 'PlayfairDisplay';
+  src: url('/sbs-uiux/font/PlayfairDisplay-Italic.ttf') format('truetype');
+  font-weight: 400;
+  font-style: italic;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'PlayfairDisplay';
+  src: url('/sbs-uiux/font/PlayfairDisplay-MediumItalic.ttf') format('truetype');
+  font-weight: 500;
+  font-style: italic;
+  font-display: swap;
+}
+
+/* ── Inter 로컬 폰트 ── */
+@font-face {
+  font-family: 'Inter';
+  src: url('/sbs-uiux/font/Inter-VariableFont_slnt,wght.ttf') format('truetype');
+  font-weight: 100 900;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'Inter';
+  src: url('/sbs-uiux/font/Inter-Regular.ttf') format('truetype');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'Inter';
+  src: url('/sbs-uiux/font/Inter-Medium.ttf') format('truetype');
+  font-weight: 500;
+  font-style: normal;
+  font-display: swap;
+}
+
+/* ═══════════════════════════════════════════════════════
+   TYPOGRAPHY SYSTEM — Perfect Fourth (1.333) Modular Scale
+   참고: typescale.com · Apple HIG · Toss Design System
+
+   Scale (base 16px × 1.333):
+   --t-xs   : 12px   caption / badge
+   --t-sm   : 14px   secondary body
+   --t-base : 16px   body
+   --t-lg   : 19px   lead / large body
+   --t-xl   : 25px   card title
+   --t-2xl  : 33px   section sub-heading
+   --t-3xl  : 44px   section heading (md)
+   --t-4xl  : 59px   section heading (lg)
+   --t-5xl  : 79px   hero sub
+   --t-6xl  : 105px  hero main
+
+   Line-height:
+   display  : 0.95 ~ 1.0   (헤드라인, 자간 촘촘)
+   heading  : 1.1 ~ 1.15
+   subhead  : 1.3
+   body     : 1.75
+   caption  : 1.5
+
+   Letter-spacing:
+   display  : -0.035em ~ -0.04em
+   heading  : -0.025em ~ -0.03em
+   subhead  : -0.015em
+   body     : 0em
+   label    : +0.12em ~ +0.15em (uppercase)
+═══════════════════════════════════════════════════════ */
+
+:root {
+  --t-xs:   12px;
+  --t-sm:   14px;
+  --t-base: 16px;
+  --t-lg:   19px;
+  --t-xl:   25px;
+  --t-2xl:  33px;
+  --t-3xl:  44px;
+  --t-4xl:  59px;
+  --t-5xl:  clamp(44px, 6vw, 79px);
+  --t-6xl:  clamp(52px, 9vw, 105px);
+  --t-hero: clamp(60px, 11vw, 120px);
+
+  --lh-display : 0.95;
+  --lh-heading : 1.1;
+  --lh-sub     : 1.3;
+  --lh-body    : 1.75;
+  --lh-caption : 1.5;
+
+  --ls-display : -0.038em;
+  --ls-heading : -0.028em;
+  --ls-sub     : -0.015em;
+  --ls-body    :  0em;
+  --ls-label   :  0.13em;
+}
+
+/* ───── 리셋 ───── */
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html {
+  scroll-behavior: smooth;
+  background-color: #0A0A0A;
+  color: #ffffff;
+  font-size: 16px;
+}
+
+body {
+  font-family: 'Pretendard', 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  background-color: #0A0A0A;
+  color: #ffffff;
+  overflow-x: hidden;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  font-size: var(--t-base);
+  line-height: var(--lh-body);
+  letter-spacing: var(--ls-body);
+}
+
+/* ───── 스크롤바 ───── */
+::-webkit-scrollbar       { width: 4px; }
+::-webkit-scrollbar-track { background: #0A0A0A; }
+::-webkit-scrollbar-thumb { background: #2a2a2a; border-radius: 4px; }
+::selection               { background: #3B82F6; color: #fff; }
+
+/* ═══════════════════════════════════════════════════════
+   TYPOGRAPHY CLASSES
+═══════════════════════════════════════════════════════ */
+
+/* 레이블 — UIUX / Curriculum 등 섹션 위 영문 태그 */
+.typo-label {
+  font-size: var(--t-xs);
+  font-weight: 600;
+  line-height: var(--lh-caption);
+  letter-spacing: var(--ls-label);
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.28);
+  margin-bottom: 14px;
+}
+.typo-label.on-light { color: rgba(0, 0, 0, 0.32); }
+
+/* 섹션 타이틀 — "커리큘럼" 등 대형 한글 제목 */
+.typo-section-title {
+  font-size: var(--t-5xl);
+  font-weight: 900;
+  line-height: var(--lh-display);
+  letter-spacing: var(--ls-display);
+  color: #ffffff;
+  margin-bottom: 16px;
+}
+.typo-section-title.on-light { color: #0A0A0A; }
+
+/* 섹션 서브타이틀 — "10단계 체계적..." */
+.typo-section-sub {
+  font-size: var(--t-lg);
+  font-weight: 400;
+  line-height: var(--lh-sub);
+  letter-spacing: var(--ls-sub);
+  color: rgba(255, 255, 255, 0.42);
+  margin-top: 18px;
+}
+.typo-section-sub.on-light { color: rgba(0, 0, 0, 0.42); }
+
+/* 본문 — 강사 소개글, 카드 설명 */
+.typo-body {
+  font-size: var(--t-base);
+  font-weight: 400;
+  line-height: var(--lh-body);
+  letter-spacing: var(--ls-body);
+  color: rgba(255, 255, 255, 0.55);
+}
+.typo-body.on-light { color: rgba(0, 0, 0, 0.52); }
+
+/* 강사명 등 중간 크기 제목 */
+.typo-name {
+  font-size: var(--t-4xl);
+  font-weight: 900;
+  line-height: var(--lh-display);
+  letter-spacing: var(--ls-display);
+  color: #0A0A0A;
+  margin-bottom: 6px;
+}
+
+/* ═══════════════════════════════════════════════════════
+   LAYOUT
+═══════════════════════════════════════════════════════ */
+
+.container {
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 0 24px;
+}
+@media (min-width: 768px)  { .container { padding: 0 48px; } }
+@media (min-width: 1280px) { .container { padding: 0 80px; } }
+
+/* 섹션 패딩 */
+.section-dark  { background-color: #0A0A0A; padding: 200px 0; }
+.section-light { background-color: #ffffff;  padding: 200px 0; color: #0A0A0A; }
+#curriculum { padding: 100px 0; }
+
+@media (max-width: 767px) {
+  .section-dark,
+  .section-light { padding: 120px 0; }
+}
+
+/* ═══════════════════════════════════════════════════════
+   HEADER
+═══════════════════════════════════════════════════════ */
+
+.desktop-nav {
+  display: flex;
+  align-items: center;
+  gap: 40px;
+}
+
+.mobile-menu-btn { display: none !important; }
+
+@media (max-width: 767px) {
+  .desktop-nav       { display: none !important; }
+  .mobile-menu-btn   { display: block !important; }
+  .header-inner      { padding: 0 20px !important; }
+}
+
+/* ═══════════════════════════════════════════════════════
+   CURRICULUM
+═══════════════════════════════════════════════════════ */
+
+.curriculum-scroll-wrapper { display: none; }
+
+.curriculum-scroll-inner {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  overflow-x: auto;
+  padding-bottom: 20px;
+  scrollbar-width: thin;
+  scrollbar-color: #2a2a2a transparent;
+}
+.curriculum-scroll-inner::-webkit-scrollbar       { height: 3px; }
+.curriculum-scroll-inner::-webkit-scrollbar-thumb { background: #2a2a2a; border-radius: 4px; }
+
+.curriculum-mobile {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+@media (min-width: 768px) {
+  .curriculum-scroll-wrapper { display: block; }
+  .curriculum-mobile          { display: none; }
+}
+
+/* ═══════════════════════════════════════════════════════
+   FOIL HERO
+═══════════════════════════════════════════════════════ */
+
+@keyframes foil-gradient-shift {
+  0%   { background-position: 0%   30%; }
+  33%  { background-position: 100% 60%; }
+  66%  { background-position: 60%  100%;}
+  100% { background-position: 0%   30%; }
+}
+
+@keyframes foil-float {
+  0%   { transform: rotate(-3deg) translateY(0px)   scale(1);    }
+  30%  { transform: rotate(-1deg) translateY(-14px) scale(1.02); }
+  60%  { transform: rotate(-4deg) translateY(8px)   scale(0.99); }
+  100% { transform: rotate(-3deg) translateY(0px)   scale(1);    }
+}
+
+@keyframes highlight-drift {
+  0%   { opacity: 0.42; transform: translate(0%, 0%);   }
+  40%  { opacity: 0.55; transform: translate(12%, -8%); }
+  70%  { opacity: 0.38; transform: translate(-8%, 10%); }
+  100% { opacity: 0.42; transform: translate(0%, 0%);   }
+}
+
+.foil-gradient-layer {
+  background: linear-gradient(
+    148deg,
+    #2340d6  0%,
+    #4f8fe8 14%,
+    #8ec5f5 26%,
+    #d0e8f8 38%,
+    #7ab8e0 50%,
+    #3a8cde 62%,
+    #1aab90 75%,
+    #22c55e 87%,
+    #6ee7b7 100%
+  );
+  background-size: 250% 250%;
+  animation: foil-gradient-shift 7s ease-in-out infinite;
+}
+
+.foil-highlight-1 {
+  position: absolute; inset: 0;
+  background: radial-gradient(ellipse 55% 38% at 32% 22%, rgba(255,255,255,0.52) 0%, transparent 68%);
+  animation: highlight-drift 5s ease-in-out infinite;
+  mix-blend-mode: overlay;
+}
+
+.foil-highlight-2 {
+  position: absolute; inset: 0;
+  background: radial-gradient(ellipse 35% 45% at 72% 68%, rgba(200,240,255,0.3) 0%, transparent 65%);
+  animation: highlight-drift 7s ease-in-out infinite reverse;
+  mix-blend-mode: screen;
+}
+
+.foil-wrap {
+  animation: foil-float 6s ease-in-out infinite;
+}
+
+/* ═══════════════════════════════════════════════════════
+   HERO TEXT
+═══════════════════════════════════════════════════════ */
+
+.hero-text {
+  font-family: 'Inter', 'Pretendard', sans-serif;
+  font-size: 12vw;
+  font-weight: 900;
+  line-height: 0.9;
+  letter-spacing: 0.04em;
+  color: #ffffff;
+  display: block;
+}
+
+/* iOS HIG — frosted glass panel */
+.hero-glass-panel {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 3vw 5vw;
+  border-radius: 28px;
+  background: rgba(255, 255, 255, 0.08);
+  backdrop-filter: blur(40px) saturate(180%);
+  -webkit-backdrop-filter: blur(40px) saturate(180%);
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.2),
+    0 8px 32px rgba(0, 0, 0, 0.4);
+}
+
+.hero-img-wrap {
+  width: clamp(260px, 42vw, 600px);
+}
+
+@media (max-width: 767px) {
+  .hero-text     { font-size: 16vw; }
+  .hero-img-wrap { width: 72vw; }
+}
+
+/* ═══════════════════════════════════════════════════════
+   INSTRUCTOR GRID
+═══════════════════════════════════════════════════════ */
+
+.instructor-grid { grid-template-columns: 1fr !important; }
+
+@media (min-width: 768px) {
+  .instructor-grid {
+    grid-template-columns: 280px 1fr !important;
+    gap: 80px !important;
+  }
+}
+
+/* ═══════════════════════════════════════════════════════
+   FOOTER
+═══════════════════════════════════════════════════════ */
+
+.footer-grid { grid-template-columns: 1fr; }
+
+@media (min-width: 768px) {
+  .footer-grid { grid-template-columns: 5fr 4fr 4fr; }
+}
