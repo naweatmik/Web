@@ -356,6 +356,16 @@ body {
 }
 
 /* ═══════════════════════════════════════════════════════
+   CURRICULUM MOBILE
+═══════════════════════════════════════════════════════ */
+
+@media (max-width: 575px) {
+  #curriculum .curriculum-title    { font-size: 0.85rem !important; }
+  #curriculum .curriculum-step-num { font-size: 0.75rem !important; width: 18px !important; }
+  #curriculum .curriculum-tag      { font-size: 8px !important; padding: 3px 7px !important; }
+}
+
+/* ═══════════════════════════════════════════════════════
    INSTRUCTOR GRID
 ═══════════════════════════════════════════════════════ */
 
@@ -369,6 +379,15 @@ body {
     grid-template-columns: 280px 1fr !important;
     gap: 80px !important;
   }
+}
+
+/* ═══════════════════════════════════════════════════════
+   GALLERY BENTO
+═══════════════════════════════════════════════════════ */
+
+@media (max-width: 767px) {
+  #works .gallery-bento { grid-template-columns: repeat(2, 1fr) !important; }
+  #works .gallery-bento > * { grid-column: span 1 !important; height: 200px !important; }
 }
 
 /* ═══════════════════════════════════════════════════════

@@ -45,7 +45,7 @@ export default function CurriculumFlow() {
         <div style={{ display: 'flex', alignItems: 'baseline', gap: '16px', flexWrap: 'wrap' }}>
           <h2 style={{
             fontFamily: "'Inter', 'Pretendard', sans-serif",
-            fontSize: 'clamp(2.8rem, 7vw, 6rem)',
+            fontSize: 'clamp(2rem, 5vw, 6rem)',
             fontWeight: 900, lineHeight: 0.95, letterSpacing: '-0.04em',
             color: '#0A0A0A', margin: 0,
           }}>커리큘럼</h2>
@@ -89,49 +89,58 @@ export default function CurriculumFlow() {
                     position: 'relative',
                     display: 'flex',
                     alignItems: 'center',
-                    gap: '16px',
-                    paddingTop: 'clamp(17px, 3vw, 19px)',
-                    paddingBottom: 'clamp(17px, 3vw, 19px)',
-                    paddingLeft: '52px',
-                    paddingRight: 'clamp(17px, 3vw, 19px)',
+                    gap: '8px',
+                    paddingTop: '24px',
+                    paddingBottom: '24px',
+                    paddingLeft: 'clamp(36px, 6vw, 52px)',
+                    paddingRight: 'clamp(12px, 3vw, 19px)',
                     borderBottom: '1px solid rgba(0,0,0,0.18)',
                   }}
                 >
                   {/* 번호 — absolute, 항상 표시 */}
-                  <span style={{
-                    position: 'absolute',
-                    left: 0,
-                    top: '50%',
-                    transform: 'translateY(-50%)',
-                    fontFamily: "'Inter', sans-serif",
-                    fontSize: '2.8rem',
-                    fontWeight: 700,
-                    letterSpacing: '0.04em',
-                    color: 'rgba(0,0,0,0.25)',
-                    width: '36px',
-                    textAlign: 'right',
-                  }}>{String(item.step).padStart(2, '0')}</span>
+                  <span
+                    className="curriculum-step-num"
+                    style={{
+                      position: 'absolute',
+                      left: 0,
+                      top: '50%',
+                      transform: 'translateY(-50%)',
+                      fontFamily: "'Inter', sans-serif",
+                      fontSize: 'clamp(1.2rem, 3.5vw, 2.8rem)',
+                      fontWeight: 700,
+                      letterSpacing: '0.04em',
+                      color: 'rgba(0,0,0,0.25)',
+                      width: 'clamp(24px, 4vw, 36px)',
+                      textAlign: 'right',
+                    }}
+                  >{String(item.step).padStart(2, '0')}</span>
 
                   {/* 과목명 */}
-                  <span style={{
-                    flex: 1,
-                    minWidth: 0,
-                    fontFamily: "'Inter', 'Pretendard', sans-serif",
-                    fontSize: '3.5rem',
-                    fontWeight: 900, lineHeight: 1.05, letterSpacing: '-0.025em',
-                    color: '#0A0A0A',
-                    wordBreak: 'keep-all',
-                    paddingLeft: '24px',
-                  }}>{item.title}</span>
+                  <span
+                    className="curriculum-title"
+                    style={{
+                      flex: 1,
+                      minWidth: 0,
+                      fontFamily: "'Inter', 'Pretendard', sans-serif",
+                      fontSize: 'clamp(1.2rem, 4vw, 3.5rem)',
+                      fontWeight: 900, lineHeight: 1.05, letterSpacing: '-0.025em',
+                      color: '#0A0A0A',
+                      wordBreak: 'keep-all',
+                      paddingLeft: 'clamp(12px, 2.5vw, 24px)',
+                    }}
+                  >{item.title}</span>
 
                   {/* 태그 */}
-                  <span style={{
-                    fontSize: '10px', fontWeight: 700, letterSpacing: '0.12em',
-                    textTransform: 'uppercase', color: item.color,
-                    background: item.color + '18', border: '1px solid ' + item.color + '55',
-                    padding: '4px 12px', borderRadius: '4px',
-                    fontFamily: "'Inter', sans-serif", whiteSpace: 'nowrap', flexShrink: 0,
-                  }}>{item.tag}</span>
+                  <span
+                    className="curriculum-tag"
+                    style={{
+                      fontSize: '10px', fontWeight: 700, letterSpacing: '0.12em',
+                      textTransform: 'uppercase', color: item.color,
+                      background: item.color + '18', border: '1px solid ' + item.color + '55',
+                      padding: '4px 12px', borderRadius: '4px',
+                      fontFamily: "'Inter', sans-serif", whiteSpace: 'nowrap', flexShrink: 0,
+                    }}
+                  >{item.tag}</span>
                 </motion.div>
               )
             })}

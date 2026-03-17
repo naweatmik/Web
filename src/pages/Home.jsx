@@ -109,14 +109,13 @@ export default function Home() {
       {/* ═══════════════════════════════════════════════
           WORKS
       ═══════════════════════════════════════════════ */}
-      <section id="works" style={{ background: '#000000', padding: '200px 0 220px' }}>
-        <div className="container">
+      <section id="works" style={{ background: '#000000' }}>
+        <div className="container" style={{ paddingTop: '200px', paddingBottom: '80px' }}>
           <motion.div
             variants={inView}
             initial="hidden"
             whileInView="visible"
             viewport={{ once: true, margin: '-60px' }}
-            style={{ marginBottom: '72px' }}
           >
             <p style={{ fontSize: '11px', fontWeight: 600, letterSpacing: '0.25em', textTransform: 'uppercase', color: 'rgba(255,255,255,0.3)', fontFamily: "'Inter', sans-serif", marginBottom: '20px' }}>
               Student Works
@@ -128,8 +127,8 @@ export default function Home() {
               수강생들이 직접 만든 포트폴리오 작업물입니다
             </p>
           </motion.div>
-          <Gallery />
         </div>
+        <Gallery />
       </section>
 
       <Footer />

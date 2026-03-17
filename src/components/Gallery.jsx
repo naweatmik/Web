@@ -1,100 +1,144 @@
-import { useEffect, useState } from 'react'
-import { motion } from 'framer-motion'
+import { useEffect, useRef, useState } from 'react'
+import { motion, useScroll, useTransform } from 'framer-motion'
 import { supabase, isSupabaseReady } from '../lib/supabase'
 
-/* Supabase 미연결 시 보여줄 플레이스홀더 */
+const CARD_W = 400
+const CARD_H = 540
+const GAP    = 24
+const PAD_L  = 80   // 트랙 왼쪽 여백
+
 const placeholders = [
-  { id: 1, label: 'UIUX', title: 'App\nRedesign', grad: 'linear-gradient(135deg,#1e3a8a 0%,#3b82f6 60%,#93c5fd 100%)', h: 320 },
-  { id: 2, label: 'Graphic', title: 'Brand\nIdentity', grad: 'linear-gradient(135deg,#7c3aed 0%,#a855f7 50%,#f0abfc 100%)', h: 240 },
-  { id: 3, label: 'Editorial', title: 'Magazine\nLayout', grad: 'linear-gradient(135deg,#064e3b 0%,#10b981 60%,#6ee7b7 100%)', h: 280 },
-  { id: 4, label: 'Motion', title: 'Scroll\nAnimation', grad: 'linear-gradient(135deg,#7f1d1d 0%,#ef4444 55%,#fca5a5 100%)', h: 260 },
-  { id: 5, label: 'UIUX', title: 'Dashboard\nUI', grad: 'linear-gradient(135deg,#0c4a6e 0%,#0ea5e9 55%,#7dd3fc 100%)', h: 300 },
-  { id: 6, label: 'Graphic', title: 'Poster\nSeries', grad: 'linear-gradient(135deg,#78350f 0%,#f59e0b 55%,#fde68a 100%)', h: 220 },
+  { id: 1, label: 'UIUX',      title: 'App Redesign',     grad: 'linear-gradient(135deg,#1e3a8a 0%,#3b82f6 60%,#93c5fd 100%)' },
+  { id: 2, label: 'Graphic',   title: 'Brand Identity',   grad: 'linear-gradient(135deg,#7c3aed 0%,#a855f7 50%,#f0abfc 100%)' },
+  { id: 3, label: 'Editorial', title: 'Magazine Layout',  grad: 'linear-gradient(135deg,#064e3b 0%,#10b981 60%,#6ee7b7 100%)' },
+  { id: 4, label: 'Motion',    title: 'Scroll Animation', grad: 'linear-gradient(135deg,#7f1d1d 0%,#ef4444 55%,#fca5a5 100%)' },
+  { id: 5, label: 'UIUX',      title: 'Dashboard UI',     grad: 'linear-gradient(135deg,#0c4a6e 0%,#0ea5e9 55%,#7dd3fc 100%)' },
+  { id: 6, label: 'Graphic',   title: 'Poster Series',    grad: 'linear-gradient(135deg,#78350f 0%,#f59e0b 55%,#fde68a 100%)' },
 ]
 
-function PlaceholderCard({ item, index }) {
+function Card({ item, index, isWork }) {
+  const num = String(index + 1).padStart(2, '0')
   return (
     <motion.div
-      initial={{ opacity: 0, y: 32 }}
+      initial={{ opacity: 0, y: 30 }}
       whileInView={{ opacity: 1, y: 0 }}
-      viewport={{ once: true, margin: '-40px' }}
-      transition={{ duration: 0.6, delay: index * 0.07, ease: [0.22, 1, 0.36, 1] }}
+      viewport={{ once: true, margin: '0px -200px 0px 0px' }}
+      transition={{ duration: 0.7, delay: index * 0.05, ease: [0.22, 1, 0.36, 1] }}
+      whileHover={{ y: -8, transition: { duration: 0.3 } }}
+      onClick={() => isWork && item.link && window.open(item.link, '_blank')}
       style={{
-        background: item.grad,
-        borderRadius: '16px',
-        height: `${item.h}px`,
-        marginBottom: '16px',
-        breakInside: 'avoid',
-        position: 'relative',
+        flexShrink: 0,
+        width: `${CARD_W}px`,
+        height: `${CARD_H}px`,
+        borderRadius: '24px',
         overflow: 'hidden',
-        cursor: 'default',
+        position: 'relative',
+        cursor: isWork && item.link ? 'pointer' : 'default',
+        background: isWork ? '#111' : item.grad,
       }}
     >
-      {/* 노이즈 텍스처 느낌 */}
+      {isWork && (
+        <img
+          src={item.image_url}
+          alt={item.title || ''}
+          style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }}
+          loading="lazy"
+        />
+      )}
+
+      {/* 하단 그라디언트 */}
       <div style={{
         position: 'absolute', inset: 0,
-        background: 'url("data:image/svg+xml,%3Csvg viewBox=\'0 0 200 200\' xmlns=\'http://www.w3.org/2000/svg\'%3E%3Cfilter id=\'n\'%3E%3CfeTurbulence type=\'fractalNoise\' baseFrequency=\'0.9\' numOctaves=\'4\' stitchTiles=\'stitch\'/%3E%3C/filter%3E%3Crect width=\'100%25\' height=\'100%25\' filter=\'url(%23n)\' opacity=\'0.08\'/%3E%3C/svg%3E")',
-        opacity: 0.4,
+        background: 'linear-gradient(to top, rgba(0,0,0,0.7) 0%, transparent 55%)',
+        pointerEvents: 'none',
       }} />
 
-      {/* 라벨 */}
+      {/* 대형 번호 */}
       <div style={{
-        position: 'absolute', top: '20px', left: '20px',
-        fontSize: '10px', fontWeight: 700,
-        letterSpacing: '0.15em', textTransform: 'uppercase',
-        color: 'rgba(255,255,255,0.6)',
+        position: 'absolute', top: '-12px', right: '16px',
         fontFamily: "'Inter', sans-serif",
-        background: 'rgba(0,0,0,0.2)',
-        padding: '4px 10px',
-        borderRadius: '999px',
-        backdropFilter: 'blur(4px)',
-      }}>
-        {item.label}
-      </div>
+        fontSize: '140px', fontWeight: 900, lineHeight: 1,
+        letterSpacing: '-0.06em',
+        color: 'rgba(255,255,255,0.06)',
+        userSelect: 'none', pointerEvents: 'none',
+      }}>{num}</div>
+
+      {/* 라벨 */}
+      {!isWork && (
+        <div style={{
+          position: 'absolute', top: '22px', left: '22px',
+          fontSize: '10px', fontWeight: 700,
+          letterSpacing: '0.16em', textTransform: 'uppercase',
+          color: 'rgba(255,255,255,0.8)',
+          background: 'rgba(0,0,0,0.22)',
+          padding: '5px 12px', borderRadius: '999px',
+          backdropFilter: 'blur(6px)',
+          fontFamily: "'Inter', sans-serif",
+        }}>{item.label}</div>
+      )}
 
       {/* 제목 */}
       <div style={{
-        position: 'absolute', bottom: '24px', left: '20px', right: '20px',
+        position: 'absolute', bottom: '28px', left: '26px', right: '26px',
         fontFamily: "'Inter', 'Pretendard', sans-serif",
-        fontSize: 'clamp(22px, 2.5vw, 32px)',
-        fontWeight: 900,
-        lineHeight: 1.05,
-        letterSpacing: '-0.03em',
+        fontSize: '30px', fontWeight: 900,
+        lineHeight: 1.1, letterSpacing: '-0.03em',
         color: '#ffffff',
-        whiteSpace: 'pre-line',
       }}>
-        {item.title}
+        {isWork ? (item.title || '') : item.title}
       </div>
-
     </motion.div>
   )
 }
 
 export default function Gallery() {
-  const [works, setWorks] = useState([])
-  const [loading, setLoading] = useState(true)
+  const [works, setWorks]         = useState([])
+  const [loading, setLoading]     = useState(true)
+  const [xRange, setXRange]       = useState([0, -1000])
+  const [sectionH, setSectionH]   = useState('200vh')
+  const containerRef = useRef(null)
 
   useEffect(() => {
     if (!isSupabaseReady) { setLoading(false); return }
     supabase
-      .from('works')
-      .select('*')
-      .order('created_at', { ascending: false })
+      .from('works').select('*').order('created_at', { ascending: false })
       .then(({ data, error }) => {
         if (!error) setWorks(data || [])
         setLoading(false)
       })
   }, [])
 
-  /* 로딩 스켈레톤 */
+  const items  = works.length > 0 ? works : placeholders
+  const isWork = works.length > 0
+
+  useEffect(() => {
+    const calc = () => {
+      const vw = window.innerWidth
+      const vh = window.innerHeight
+      const trackW  = PAD_L + items.length * (CARD_W + GAP) - GAP + PAD_L
+      const maxX    = -(trackW - vw)
+      const scrollH = Math.abs(maxX) + vh
+      setXRange([0, maxX])
+      setSectionH(`${scrollH}px`)
+    }
+    calc()
+    window.addEventListener('resize', calc)
+    return () => window.removeEventListener('resize', calc)
+  }, [items.length])
+
+  const { scrollYProgress } = useScroll({
+    target: containerRef,
+    offset: ['start start', 'end end'],
+  })
+  const x = useTransform(scrollYProgress, [0, 1], xRange)
+
   if (loading) {
     return (
-      <div style={{ columns: '2', columnGap: '24px' }}>
-        {[320, 240, 280, 260, 300, 220].map((h, i) => (
+      <div style={{ height: '100vh', display: 'flex', alignItems: 'center', paddingLeft: `${PAD_L}px`, gap: `${GAP}px`, overflow: 'hidden' }}>
+        {[0, 1, 2, 3].map(i => (
           <div key={i} style={{
-            height: `${h}px`, borderRadius: '16px',
-            background: 'rgba(255,255,255,0.04)',
-            marginBottom: '16px', breakInside: 'avoid',
+            flexShrink: 0, width: `${CARD_W}px`, height: `${CARD_H}px`,
+            borderRadius: '24px', background: 'rgba(255,255,255,0.04)',
             animation: 'pulse 2s ease-in-out infinite',
           }} />
         ))}
@@ -102,59 +146,37 @@ export default function Gallery() {
     )
   }
 
-  /* Supabase 미연결 or 작업물 없음 → 플레이스홀더 */
-  if (works.length === 0) {
-    return (
-      <div style={{ columns: '2', columnGap: '24px' }}>
-        {placeholders.map((item, i) => (
-          <PlaceholderCard key={item.id} item={item} index={i} />
-        ))}
-      </div>
-    )
-  }
-
-  /* 실제 작업물 */
   return (
-    <div style={{ columns: '2', columnGap: '24px' }}>
-      {works.map((work, i) => (
-        <motion.div
-          key={work.id}
-          initial={{ opacity: 0, y: 32 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true, margin: '-40px' }}
-          transition={{ duration: 0.6, delay: i * 0.07, ease: [0.22, 1, 0.36, 1] }}
-          onClick={() => work.link && window.open(work.link, '_blank')}
-          style={{
-            borderRadius: '16px',
-            marginBottom: '16px',
-            breakInside: 'avoid',
-            overflow: 'hidden',
-            cursor: work.link ? 'pointer' : 'default',
-            position: 'relative',
-          }}
-          whileHover={work.link ? { scale: 1.02 } : {}}
-        >
-          <img
-            src={work.image_url}
-            alt={work.title || '학생 작업물'}
-            style={{ width: '100%', display: 'block', objectFit: 'cover' }}
-            loading="lazy"
-          />
-          {work.link && (
-            <div className="group-hover:opacity-100" style={{
-              position: 'absolute', inset: 0,
-              background: 'rgba(0,0,0,0.65)',
-              display: 'flex', alignItems: 'center', justifyContent: 'center',
-              opacity: 0, transition: 'opacity 0.25s',
-            }}
-              onMouseEnter={e => e.currentTarget.style.opacity = '1'}
-              onMouseLeave={e => e.currentTarget.style.opacity = '0'}
-            >
-              <span style={{ color: '#fff', fontSize: '13px', fontWeight: 600 }}>포트폴리오 보기 →</span>
-            </div>
-          )}
+    <div ref={containerRef} style={{ height: sectionH, position: 'relative' }}>
+      <div style={{
+        position: 'sticky', top: 0,
+        height: '100vh', overflow: 'hidden',
+        display: 'flex', alignItems: 'center',
+      }}>
+        {/* 스크롤 힌트 */}
+        <div style={{
+          position: 'absolute', bottom: '36px', left: '50%',
+          transform: 'translateX(-50%)',
+          display: 'flex', alignItems: 'center', gap: '8px',
+          fontSize: '11px', fontWeight: 600, letterSpacing: '0.2em',
+          textTransform: 'uppercase', color: 'rgba(255,255,255,0.25)',
+          fontFamily: "'Inter', sans-serif",
+        }}>
+          <span>scroll</span>
+          <span style={{ fontSize: '16px', lineHeight: 1 }}>→</span>
+        </div>
+
+        {/* 카드 트랙 */}
+        <motion.div style={{
+          display: 'flex', gap: `${GAP}px`,
+          paddingLeft: `${PAD_L}px`,
+          x,
+        }}>
+          {items.map((item, i) => (
+            <Card key={item.id ?? i} item={item} index={i} isWork={isWork} />
+          ))}
         </motion.div>
-      ))}
+      </div>
     </div>
   )
 }

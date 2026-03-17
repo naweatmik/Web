@@ -20,10 +20,9 @@ export default function Hero() {
     }
   })
 
-  // SVG 텍스트 공통 스타일 (HTML 텍스트와 동일)
+  // SVG 텍스트 공통 스타일 (HTML 텍스트와 동일 — fontSize는 CSS .hero-text로 제어)
   const svgTextStyle = {
     fontFamily: 'Inter, Pretendard, sans-serif',
-    fontSize: '12vw',
     fontWeight: 900,
     letterSpacing: '0.04em',
   }
@@ -57,6 +56,7 @@ export default function Hero() {
                   textAnchor="middle"
                   dominantBaseline="central"
                   fill="white"
+                  className="hero-text"
                   style={{ ...svgTextStyle, transform: 'translateY(-10.8vw)' }}
                 >We are</text>
 
@@ -65,6 +65,7 @@ export default function Hero() {
                   textAnchor="middle"
                   dominantBaseline="central"
                   fill="white"
+                  className="hero-text"
                   style={svgTextStyle}
                 >Creative</text>
 
@@ -73,6 +74,7 @@ export default function Hero() {
                   textAnchor="middle"
                   dominantBaseline="central"
                   fill="white"
+                  className="hero-text"
                   style={{ ...svgTextStyle, transform: 'translateY(10.8vw)' }}
                 >Designers</text>
               </g>
