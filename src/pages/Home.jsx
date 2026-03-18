@@ -154,21 +154,21 @@ export default function Home() {
               </div>
 
               {/* 테이블 */}
-              <div style={{ marginTop: '32px', overflowX: 'auto' }}>
-                <table style={{ width: '100%', borderCollapse: 'collapse', fontFamily: "'Pretendard', 'Inter', sans-serif" }}>
+              <div style={{ marginTop: '32px', overflowX: 'auto', WebkitOverflowScrolling: 'touch' }}>
+                <table style={{ width: '100%', minWidth: '520px', borderCollapse: 'collapse', fontFamily: "'Pretendard', 'Inter', sans-serif" }}>
                   <thead>
                     <tr>
-                      <th style={{ width: '22%', padding: '12px 16px', textAlign: 'left', fontSize: '11px', fontWeight: 700, letterSpacing: '0.12em', textTransform: 'uppercase', color: 'rgba(255,255,255,0.3)', borderBottom: '1px solid rgba(255,255,255,0.08)' }}>구분</th>
-                      <th style={{ width: '39%', padding: '12px 16px', textAlign: 'left', fontSize: '11px', fontWeight: 700, letterSpacing: '0.12em', textTransform: 'uppercase', color: '#60a5fa', borderBottom: '1px solid rgba(255,255,255,0.08)' }}>웹디자인</th>
-                      <th style={{ width: '39%', padding: '12px 16px', textAlign: 'left', fontSize: '11px', fontWeight: 700, letterSpacing: '0.12em', textTransform: 'uppercase', color: 'rgba(255,255,255,0.35)', borderBottom: '1px solid rgba(255,255,255,0.08)' }}>편집디자인</th>
+                      <th style={{ width: '22%', padding: '10px 12px', textAlign: 'left', fontSize: '11px', fontWeight: 700, letterSpacing: '0.12em', textTransform: 'uppercase', color: 'rgba(255,255,255,0.3)', borderBottom: '1px solid rgba(255,255,255,0.08)' }}>구분</th>
+                      <th style={{ width: '39%', padding: '10px 12px', textAlign: 'left', fontSize: '11px', fontWeight: 700, letterSpacing: '0.12em', textTransform: 'uppercase', color: '#60a5fa', borderBottom: '1px solid rgba(255,255,255,0.08)' }}>웹디자인</th>
+                      <th style={{ width: '39%', padding: '10px 12px', textAlign: 'left', fontSize: '11px', fontWeight: 700, letterSpacing: '0.12em', textTransform: 'uppercase', color: 'rgba(255,255,255,0.35)', borderBottom: '1px solid rgba(255,255,255,0.08)' }}>편집디자인</th>
                     </tr>
                   </thead>
                   <tbody>
                     {compRows.map((row, i) => (
                       <tr key={i} style={{ background: i % 2 === 0 ? 'transparent' : 'rgba(255,255,255,0.03)' }}>
-                        <td style={{ padding: '14px 16px', fontSize: '12px', fontWeight: 600, color: 'rgba(255,255,255,0.3)', letterSpacing: '0.04em', borderBottom: '1px solid rgba(255,255,255,0.06)', whiteSpace: 'nowrap' }}>{row.aspect}</td>
-                        <td style={{ padding: '14px 16px', fontSize: '14px', fontWeight: 600, color: '#ffffff', borderBottom: '1px solid rgba(255,255,255,0.06)' }}>{row.web}</td>
-                        <td style={{ padding: '14px 16px', fontSize: '14px', fontWeight: 400, color: 'rgba(255,255,255,0.4)', borderBottom: '1px solid rgba(255,255,255,0.06)' }}>{row.print}</td>
+                        <td style={{ padding: '12px 12px', fontSize: '11px', fontWeight: 600, color: 'rgba(255,255,255,0.3)', letterSpacing: '0.04em', borderBottom: '1px solid rgba(255,255,255,0.06)', whiteSpace: 'nowrap' }}>{row.aspect}</td>
+                        <td style={{ padding: '12px 12px', fontSize: '13px', fontWeight: 600, color: '#ffffff', borderBottom: '1px solid rgba(255,255,255,0.06)' }}>{row.web}</td>
+                        <td style={{ padding: '12px 12px', fontSize: '13px', fontWeight: 400, color: 'rgba(255,255,255,0.4)', borderBottom: '1px solid rgba(255,255,255,0.06)' }}>{row.print}</td>
                       </tr>
                     ))}
                   </tbody>
