@@ -463,7 +463,7 @@ function WorksTab() {
           <Field label="카테고리 *">
             <select
               value={category}
-              onChange={(e) => setCategory(e.target.value)}
+              onChange={(e) => { setCategory(e.target.value); setLink(''); setPdfFile(null) }}
               style={{ ...S.input, cursor: 'pointer', color: '#fff', background: '#1a1a1a' }}
             >
               {WORK_CATEGORIES.map(c => <option key={c.key} value={c.key} style={{ background: '#1a1a1a', color: '#fff' }}>{c.label}</option>)}
@@ -1184,9 +1184,9 @@ export default function Admin() {
       const weekStart = new Date(now.getFullYear(), now.getMonth(), now.getDate() - 6).toISOString()
 
       const [todayRes, weekRes, totalRes] = await Promise.all([
-        supabase.from('page_views').select('id', { count: 'exact', head: true }).gte('visited_at', todayStart),
-        supabase.from('page_views').select('id', { count: 'exact', head: true }).gte('visited_at', weekStart),
-        supabase.from('page_views').select('id', { count: 'exact', head: true }),
+        supabase.from('page_views').select('*', { count: 'exact', head: true }).gte('visited_at', todayStart),
+        supabase.from('page_views').select('*', { count: 'exact', head: true }).gte('visited_at', weekStart),
+        supabase.from('page_views').select('*', { count: 'exact', head: true }),
       ])
       setStats({
         today: todayRes.count ?? 0,

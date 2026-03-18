@@ -22,15 +22,23 @@ const TILTS = [-2.4, 1.7, -1.2, 2.6, -1.8, 1.3]
 
 function FilterTabs({ active, onChange }) {
   return (
-    <div style={{ display: 'flex', justifyContent: 'center', marginBottom: 'clamp(40px, 6vw, 72px)' }}>
+    <div style={{ display: 'flex', justifyContent: 'center', marginBottom: 'clamp(40px, 6vw, 72px)', position: 'relative', zIndex: 1 }}>
       <div style={{
+        position: 'relative',
         display: 'flex',
         gap: '4px',
         background: 'rgba(255,255,255,0.06)',
+        backdropFilter: 'blur(20px) saturate(160%)',
+        WebkitBackdropFilter: 'blur(20px) saturate(160%)',
         borderRadius: '100px',
-        padding: '4px',
-        border: '1px solid rgba(255,255,255,0.1)',
+        padding: '5px',
+        border: '1px solid rgba(255,255,255,0.18)',
+        boxShadow: '0 8px 40px rgba(0,0,0,0.5), inset 0 1px 0 rgba(255,255,255,0.4), inset 0 -1px 0 rgba(0,0,0,0.2), inset 1px 0 0 rgba(255,255,255,0.15), inset -1px 0 0 rgba(255,255,255,0.06)',
+        overflow: 'hidden',
       }}>
+        {/* 표면 반사 shimmer */}
+        <div style={{ position: 'absolute', inset: 0, borderRadius: '100px', background: 'linear-gradient(160deg, rgba(255,255,255,0.18) 0%, rgba(255,255,255,0.04) 40%, transparent 65%)', pointerEvents: 'none' }} />
+        <div style={{ position: 'absolute', top: 0, left: 0, right: 0, height: '1px', background: 'linear-gradient(90deg, transparent 5%, rgba(255,255,255,0.7) 25%, rgba(255,255,255,1) 50%, rgba(255,255,255,0.7) 75%, transparent 95%)', pointerEvents: 'none' }} />
         {CATEGORIES.map(cat => (
           <button
             key={cat.key}
@@ -46,7 +54,7 @@ function FilterTabs({ active, onChange }) {
               fontWeight: 600,
               fontFamily: "'Pretendard', 'Inter', sans-serif",
               letterSpacing: '0.02em',
-              color: active === cat.key ? '#0a0a0a' : 'rgba(255,255,255,0.45)',
+              color: active === cat.key ? '#0a0a0a' : 'rgba(255,255,255,0.5)',
               transition: 'color 0.2s',
               whiteSpace: 'nowrap',
               zIndex: 1,
@@ -61,6 +69,7 @@ function FilterTabs({ active, onChange }) {
                   background: '#ffffff',
                   borderRadius: '100px',
                   zIndex: -1,
+                  boxShadow: '0 2px 12px rgba(255,255,255,0.25)',
                 }}
                 transition={{ type: 'spring', stiffness: 380, damping: 30 }}
               />
@@ -77,30 +86,35 @@ function Card({ item, index, isWork, onCardClick }) {
   const tilt = TILTS[index % TILTS.length]
   const num  = String(index + 1).padStart(2, '0')
   const catLabel = CATEGORIES.find(c => c.key === item.category)?.label || item.category || ''
+  const glowColor = {
+    web:    'rgba(59,130,246,0.22)',
+    app:    'rgba(168,85,247,0.22)',
+    detail: 'rgba(16,185,129,0.2)',
+  }[item.category] || 'rgba(255,255,255,0.1)'
 
   return (
     <motion.div
-      layout
-      initial={{ opacity: 0, y: 40, rotate: tilt }}
-      animate={{ opacity: 1, y: 0,  rotate: tilt }}
-      exit={{ opacity: 0, scale: 0.92 }}
-      transition={{ duration: 0.5, delay: index * 0.06, ease: [0.22, 1, 0.36, 1] }}
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1, rotate: tilt, boxShadow: '0 8px 30px rgba(0,0,0,0.4)' }}
+      exit={{ opacity: 0 }}
+      transition={{ duration: 0.25, ease: 'easeOut' }}
       whileHover={{
-        rotate: 0, y: -16, scale: 1.03,
-        transition: { duration: 0.35, ease: [0.22, 1, 0.36, 1] },
+        rotate: 0, y: -12, scale: 1.03,
+        boxShadow: `0 0 40px ${glowColor}, 0 24px 40px rgba(0,0,0,0.5)`,
+        transition: { duration: 0.3, ease: [0.22, 1, 0.36, 1] },
       }}
       onClick={() => isWork && onCardClick(item)}
       style={{
         cursor: isWork ? 'pointer' : 'default',
         borderRadius: '12px',
-        overflow: 'hidden',
+        overflow: 'visible',
         position: 'relative',
         aspectRatio: '4 / 3',
         background: isWork ? '#111' : item.grad,
-        boxShadow: 'none',
         transformOrigin: 'center bottom',
       }}
     >
+      <div style={{ position: 'absolute', inset: 0, borderRadius: '12px', overflow: 'hidden' }}>
       {isWork && (
         <img
           src={item.image_url}
@@ -112,7 +126,6 @@ function Card({ item, index, isWork, onCardClick }) {
 
       <div style={{
         position: 'absolute', inset: 0,
-        background: 'linear-gradient(to top, rgba(0,0,0,0.72) 0%, rgba(0,0,0,0.1) 45%, transparent 70%)',
         pointerEvents: 'none',
       }} />
 
@@ -149,6 +162,7 @@ function Card({ item, index, isWork, onCardClick }) {
         color: '#ffffff',
       }}>
         {isWork ? (item.title || '') : item.title}
+      </div>
       </div>
     </motion.div>
   )
@@ -298,13 +312,13 @@ export default function Gallery() {
         <FilterTabs active={active} onChange={handleCategory} />
       </div>
 
-      <div className="gallery-tilt-grid">
-        <AnimatePresence mode="popLayout">
+      <motion.div layout transition={{ duration: 0.35, ease: [0.22, 1, 0.36, 1] }} className="gallery-tilt-grid">
+        <AnimatePresence mode="sync">
           {paged.map((item, i) => (
             <Card key={item.id} item={item} index={i} isWork={isWork} onCardClick={handleCardClick} />
           ))}
         </AnimatePresence>
-      </div>
+      </motion.div>
 
       {filtered.length === 0 && (
         <motion.div

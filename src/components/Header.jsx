@@ -49,9 +49,10 @@ export default function Header() {
         zIndex: 50,
         transition: 'transform 0.35s ease, background 0.3s, backdrop-filter 0.3s, border-color 0.3s',
         transform: hidden ? 'translateY(-100%)' : 'translateY(0)',
-        background: scrolled ? 'rgba(0,0,0,0.82)' : 'transparent',
+        background: scrolled ? 'linear-gradient(to bottom, rgba(0,0,0,0.88) 55%, transparent)' : 'transparent',
         backdropFilter: scrolled ? 'blur(12px)' : 'none',
-        borderBottom: scrolled ? '1px solid rgba(255,255,255,0.08)' : '1px solid transparent',
+        WebkitBackdropFilter: scrolled ? 'blur(12px)' : 'none',
+        borderBottom: 'none',
       }}>
         <div className="header-inner" style={{
           maxWidth: '1280px',

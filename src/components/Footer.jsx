@@ -25,7 +25,7 @@ export default function Footer() {
           }}>
             수강이 궁금하신가요?
           </h2>
-          <ArrowUpRight size={32} color="#0A0A0A" strokeWidth={2} />
+          <ArrowUpRight color="#0A0A0A" strokeWidth={1.8} style={{ width: 'clamp(28px, 3.5vw, 44px)', height: 'clamp(28px, 3.5vw, 44px)', flexShrink: 0 }} />
         </div>
 
         {/* ── 메인 그리드 ── */}

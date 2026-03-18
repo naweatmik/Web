@@ -22,7 +22,6 @@ export default function CurriculumFlow() {
       .order('step', { ascending: true })
       .then(({ data }) => {
         if (data && data.length > 0) {
-          // DB 데이터에 없는 step은 로컬 기본값으로 보완
           const dbSteps = data.map((d) => d.step)
           const missing = defaultCurriculum.filter((c) => !dbSteps.includes(c.step))
           setCurriculum([...data, ...missing].sort((a, b) => a.step - b.step))
@@ -31,118 +30,138 @@ export default function CurriculumFlow() {
   }, [])
 
   return (
-    <div style={{ position: 'relative', overflow: 'visible' }}>
+    <div style={{ position: 'relative', zIndex: 1 }}>
 
-
-      {/* 섹션 헤더 */}
-      <div style={{ position: 'relative', zIndex: 1, marginBottom: '80px' }}>
+      {/* ── 섹션 헤더 ── */}
+      <div style={{ marginBottom: 'clamp(48px, 8vw, 96px)' }}>
         <p style={{
           fontSize: '11px', fontWeight: 600, letterSpacing: '0.28em',
-          textTransform: 'uppercase', color: 'rgba(0,0,0,0.35)',
-          fontFamily: "'Inter', sans-serif", marginBottom: '20px',
+          textTransform: 'uppercase', color: 'rgba(255,255,255,0.4)',
+          fontFamily: "'Inter', sans-serif", marginBottom: '16px', margin: '0 0 16px',
         }}>CURRICULUM</p>
-        <div style={{ display: 'flex', alignItems: 'baseline', gap: '16px', flexWrap: 'wrap' }}>
+        <div style={{ display: 'flex', alignItems: 'baseline', gap: '14px', flexWrap: 'wrap' }}>
           <h2 style={{
             fontFamily: "'Inter', 'Pretendard', sans-serif",
-            fontSize: 'clamp(2rem, 5vw, 6rem)',
-            fontWeight: 900, lineHeight: 0.95, letterSpacing: '-0.04em',
-            color: '#0A0A0A', margin: 0,
+            fontSize: 'clamp(2.4rem, 5vw, 6rem)',
+            fontWeight: 900, lineHeight: 0.92, letterSpacing: '-0.04em',
+            color: '#ffffff', margin: 0,
           }}>커리큘럼</h2>
           <span style={{
             fontFamily: "'Inter', 'Pretendard', sans-serif",
-            fontSize: 'clamp(1.1rem, 2.2vw, 1.6rem)',
-            fontWeight: 300, color: 'rgba(0,0,0,0.35)', letterSpacing: '-0.01em',
+            fontSize: 'clamp(1rem, 2vw, 1.5rem)',
+            fontWeight: 300, color: 'rgba(255,255,255,0.35)', letterSpacing: '-0.01em',
           }}>과정</span>
         </div>
       </div>
 
-      {/* 그룹 리스트 */}
-      <div style={{ position: 'relative', zIndex: 1 }}>
+      {/* ── 그룹 리스트 ── */}
+      <div style={{ display: 'flex', flexDirection: 'column', gap: 'clamp(36px, 6vw, 56px)' }}>
         {groups.map((group, gIdx) => (
-          <div key={group.label} style={{ marginTop: gIdx > 0 ? '64px' : 0 }}>
+          <div key={group.label}>
 
             {/* 그룹 라벨 */}
-            <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '16px' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '12px', paddingLeft: '4px' }}>
               <span style={{
-                width: '8px', height: '8px', borderRadius: '50%',
+                width: '6px', height: '6px', borderRadius: '50%',
                 background: group.color, flexShrink: 0, display: 'inline-block',
+                boxShadow: `0 0 8px ${group.color}`,
               }} />
               <span style={{
                 fontSize: '10px', fontWeight: 700, textTransform: 'uppercase',
-                letterSpacing: '0.18em', color: group.color, fontFamily: "'Inter', sans-serif",
+                letterSpacing: '0.2em', color: group.color, fontFamily: "'Inter', sans-serif",
               }}>{group.label}</span>
             </div>
 
-            {/* 행 */}
-            {group.steps.map((step, sIdx) => {
-              const item = curriculum.find((c) => c.step === step)
-              if (!item) return null
-              return (
-                <motion.div
-                  key={step}
-                  initial={{ opacity: 0, y: 30 }}
-                  whileInView={{ opacity: 1, y: 0 }}
-                  viewport={{ once: false, amount: 0 }}
-                  transition={{ duration: 0.55, delay: sIdx * 0.08, ease: [0.22, 1, 0.36, 1] }}
-                  style={{
-                    position: 'relative',
-                    display: 'flex',
-                    alignItems: 'center',
-                    gap: '8px',
-                    paddingTop: '24px',
-                    paddingBottom: '24px',
-                    paddingLeft: 'clamp(36px, 6vw, 52px)',
-                    paddingRight: 'clamp(12px, 3vw, 19px)',
-                    borderBottom: '1px solid rgba(0,0,0,0.18)',
-                  }}
-                >
-                  {/* 번호 — absolute, 항상 표시 */}
-                  <span
-                    className="curriculum-step-num"
+            {/* 카드 목록 */}
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
+              {group.steps.map((step, sIdx) => {
+                const item = curriculum.find((c) => c.step === step)
+                if (!item) return null
+                return (
+                  <motion.div
+                    key={step}
+                    initial={{ opacity: 0, y: 24 }}
+                    whileInView={{ opacity: 1, y: 0 }}
+                    viewport={{ once: false, amount: 0 }}
+                    transition={{ duration: 0.5, delay: sIdx * 0.07, ease: [0.22, 1, 0.36, 1] }}
                     style={{
-                      position: 'absolute',
-                      left: 0,
-                      top: '50%',
-                      transform: 'translateY(-50%)',
-                      fontFamily: "'Inter', sans-serif",
-                      fontSize: 'clamp(1.2rem, 3.5vw, 2.8rem)',
-                      fontWeight: 700,
-                      letterSpacing: '0.04em',
-                      color: 'rgba(0,0,0,0.25)',
-                      width: 'clamp(24px, 4vw, 36px)',
-                      textAlign: 'right',
+                      position: 'relative',
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: '0',
+                      padding: 'clamp(16px, 2.2vw, 24px) clamp(16px, 2.5vw, 28px)',
+                      paddingLeft: 'clamp(48px, 7vw, 72px)',
+                      /* 유리 카드 */
+                      background: 'rgba(255,255,255,0.04)',
+                      backdropFilter: 'blur(18px) saturate(150%)',
+                      WebkitBackdropFilter: 'blur(18px) saturate(150%)',
+                      borderRadius: '16px',
+                      border: '1px solid rgba(255,255,255,0.15)',
+                      boxShadow: '0 8px 32px rgba(0,0,0,0.45), inset 0 1px 0 rgba(255,255,255,0.35), inset 0 -1px 0 rgba(0,0,0,0.2), inset 1px 0 0 rgba(255,255,255,0.15), inset -1px 0 0 rgba(255,255,255,0.05)',
                     }}
-                  >{String(item.step).padStart(2, '0')}</span>
+                  >
+                    {/* 유리 표면 반사 레이어 */}
+                    <div style={{ position: 'absolute', inset: 0, borderRadius: '16px', background: 'linear-gradient(160deg, rgba(255,255,255,0.12) 0%, rgba(255,255,255,0.04) 35%, transparent 60%)', pointerEvents: 'none' }} />
+                    <div style={{ position: 'absolute', top: 0, left: 0, right: 0, height: '1px', borderRadius: '16px 16px 0 0', background: 'linear-gradient(90deg, transparent 5%, rgba(255,255,255,0.6) 30%, rgba(255,255,255,0.9) 55%, rgba(255,255,255,0.6) 75%, transparent 95%)', pointerEvents: 'none' }} />
+                    {/* 왼쪽 컬러 라인 */}
+                    <div style={{
+                      position: 'absolute', left: 0, top: '12px', bottom: '12px',
+                      width: '3px', borderRadius: '0 3px 3px 0',
+                      background: item.color,
+                      opacity: 0.7,
+                    }} />
 
-                  {/* 과목명 */}
-                  <span
-                    className="curriculum-title"
-                    style={{
+                    {/* 스텝 번호 */}
+                    <span style={{
+                      position: 'absolute',
+                      left: 'clamp(12px, 2vw, 20px)',
+                      fontFamily: "'Inter', sans-serif",
+                      fontSize: 'clamp(11px, 1.2vw, 13px)',
+                      fontWeight: 700,
+                      letterSpacing: '0.06em',
+                      color: 'rgba(255,255,255,0.22)',
+                    }}>{String(item.step).padStart(2, '0')}</span>
+
+                    {/* 과목명 */}
+                    <span style={{
                       flex: 1,
                       minWidth: 0,
                       fontFamily: "'Inter', 'Pretendard', sans-serif",
-                      fontSize: 'clamp(1.2rem, 4vw, 3.5rem)',
-                      fontWeight: 900, lineHeight: 1.05, letterSpacing: '-0.025em',
-                      color: '#0A0A0A',
+                      fontSize: 'clamp(1.05rem, 3.2vw, 2.8rem)',
+                      fontWeight: 800,
+                      lineHeight: 1.1,
+                      letterSpacing: '-0.025em',
+                      color: '#ffffff',
                       wordBreak: 'keep-all',
-                      paddingLeft: 'clamp(12px, 2.5vw, 24px)',
-                    }}
-                  >{item.title}</span>
+                    }}>{item.title}</span>
 
-                  {/* 태그 */}
-                  <span
-                    className="curriculum-tag"
-                    style={{
-                      fontSize: '10px', fontWeight: 700, letterSpacing: '0.12em',
+                    {/* 영문 부제 */}
+                    <span style={{
+                      display: 'none',
+                      fontFamily: "'Inter', sans-serif",
+                      fontSize: 'clamp(11px, 1vw, 13px)',
+                      fontWeight: 400,
+                      color: 'rgba(255,255,255,0.25)',
+                      letterSpacing: '0.01em',
+                      marginRight: '16px',
+                      whiteSpace: 'nowrap',
+                    }} className="curriculum-en">{item.titleEn}</span>
+
+                    {/* 태그 */}
+                    <span style={{
+                      fontSize: '10px', fontWeight: 700, letterSpacing: '0.1em',
                       textTransform: 'uppercase', color: item.color,
-                      background: item.color + '18', border: '1px solid ' + item.color + '55',
-                      padding: '4px 12px', borderRadius: '4px',
-                      fontFamily: "'Inter', sans-serif", whiteSpace: 'nowrap', flexShrink: 0,
-                    }}
-                  >{item.tag}</span>
-                </motion.div>
-              )
-            })}
+                      background: item.color + '20',
+                      border: '1px solid ' + item.color + '50',
+                      padding: '5px 12px', borderRadius: '6px',
+                      fontFamily: "'Inter', sans-serif",
+                      whiteSpace: 'nowrap', flexShrink: 0,
+                      boxShadow: `0 0 12px ${item.color}30`,
+                    }}>{item.tag}</span>
+                  </motion.div>
+                )
+              })}
+            </div>
           </div>
         ))}
       </div>
