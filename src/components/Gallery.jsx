@@ -154,7 +154,7 @@ function Card({ item, index, isWork, onCardClick }) {
   )
 }
 
-function Lightbox({ src, onClose }) {
+function Lightbox({ src, scrollable, onClose }) {
   useEffect(() => {
     function onKey(e) { if (e.key === 'Escape') onClose() }
     window.addEventListener('keydown', onKey)
@@ -171,8 +171,13 @@ function Lightbox({ src, onClose }) {
       style={{
         position: 'fixed', inset: 0,
         background: 'rgba(0,0,0,0.92)',
-        display: 'flex', alignItems: 'center', justifyContent: 'center',
-        zIndex: 9999, cursor: 'zoom-out', padding: '24px',
+        zIndex: 9999,
+        overflowY: scrollable ? 'auto' : 'hidden',
+        display: scrollable ? 'block' : 'flex',
+        alignItems: scrollable ? undefined : 'center',
+        justifyContent: scrollable ? undefined : 'center',
+        padding: scrollable ? '60px 24px 40px' : '24px',
+        cursor: 'zoom-out',
       }}
     >
       <button
@@ -183,23 +188,49 @@ function Lightbox({ src, onClose }) {
           color: '#fff', width: 40, height: 40,
           borderRadius: '50%', cursor: 'pointer', fontSize: 20,
           display: 'flex', alignItems: 'center', justifyContent: 'center',
+          zIndex: 1,
         }}
       >×</button>
-      <motion.img
-        initial={{ scale: 0.92, opacity: 0 }}
-        animate={{ scale: 1, opacity: 1 }}
-        exit={{ scale: 0.92, opacity: 0 }}
-        transition={{ duration: 0.25, ease: [0.22, 1, 0.36, 1] }}
-        src={src}
-        alt=""
-        onClick={e => e.stopPropagation()}
-        style={{
-          maxWidth: '90vw', maxHeight: '90vh',
-          objectFit: 'contain', borderRadius: '8px',
-          boxShadow: '0 24px 80px rgba(0,0,0,0.8)',
-          cursor: 'default',
-        }}
-      />
+
+      {scrollable ? (
+        /* 상세페이지: 세로 스크롤 */
+        <motion.img
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          exit={{ opacity: 0 }}
+          transition={{ duration: 0.25, ease: [0.22, 1, 0.36, 1] }}
+          src={src}
+          alt=""
+          onClick={e => e.stopPropagation()}
+          style={{
+            display: 'block',
+            margin: '0 auto',
+            width: '100%',
+            maxWidth: '560px',
+            height: 'auto',
+            borderRadius: '8px',
+            boxShadow: '0 24px 80px rgba(0,0,0,0.8)',
+            cursor: 'default',
+          }}
+        />
+      ) : (
+        /* 일반: 화면 안에 맞춤 */
+        <motion.img
+          initial={{ scale: 0.92, opacity: 0 }}
+          animate={{ scale: 1, opacity: 1 }}
+          exit={{ scale: 0.92, opacity: 0 }}
+          transition={{ duration: 0.25, ease: [0.22, 1, 0.36, 1] }}
+          src={src}
+          alt=""
+          onClick={e => e.stopPropagation()}
+          style={{
+            maxWidth: '90vw', maxHeight: '90vh',
+            objectFit: 'contain', borderRadius: '8px',
+            boxShadow: '0 24px 80px rgba(0,0,0,0.8)',
+            cursor: 'default',
+          }}
+        />
+      )}
     </motion.div>
   )
 }
@@ -211,7 +242,7 @@ export default function Gallery() {
   const [loading, setLoading] = useState(true)
   const [active, setActive]   = useState('all')
   const [page, setPage]       = useState(1)
-  const [lightbox, setLightbox] = useState(null)
+  const [lightbox, setLightbox] = useState(null) // { src, scrollable }
 
   useEffect(() => {
     if (!isSupabaseReady) { setLoading(false); return }
@@ -224,17 +255,17 @@ export default function Gallery() {
   }, [])
 
   function handleCardClick(item) {
-    // 상세페이지: 원본 이미지(link) 있으면 원본으로, 없으면 썸네일로 라이트박스
+    // 상세페이지: 세로 스크롤 라이트박스 (원본 있으면 원본, 없으면 썸네일)
     if (item.category === 'detail') {
-      setLightbox(item.link || item.image_url)
+      setLightbox({ src: item.link || item.image_url, scrollable: true })
       return
     }
-    // 웹·앱: 링크(PDF 포함) 있으면 열기, 없으면 라이트박스
+    // 웹·앱: 링크(PDF 포함) 있으면 열기, 없으면 일반 라이트박스
     if (item.link) {
       window.open(item.link, '_blank')
       return
     }
-    setLightbox(item.image_url)
+    setLightbox({ src: item.image_url, scrollable: false })
   }
 
   const handleCategory = (key) => { setActive(key); setPage(1) }
@@ -339,7 +370,7 @@ export default function Gallery() {
 
       {/* 라이트박스 */}
       <AnimatePresence>
-        {lightbox && <Lightbox src={lightbox} onClose={() => setLightbox(null)} />}
+        {lightbox && <Lightbox src={lightbox.src} scrollable={lightbox.scrollable} onClose={() => setLightbox(null)} />}
       </AnimatePresence>
     </div>
   )
