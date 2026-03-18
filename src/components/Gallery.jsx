@@ -73,9 +73,10 @@ function FilterTabs({ active, onChange }) {
   )
 }
 
-function Card({ item, index, isWork }) {
+function Card({ item, index, isWork, onCardClick }) {
   const tilt = TILTS[index % TILTS.length]
   const num  = String(index + 1).padStart(2, '0')
+  const catLabel = CATEGORIES.find(c => c.key === item.category)?.label || item.category || ''
 
   return (
     <motion.div
@@ -88,9 +89,9 @@ function Card({ item, index, isWork }) {
         rotate: 0, y: -16, scale: 1.03,
         transition: { duration: 0.35, ease: [0.22, 1, 0.36, 1] },
       }}
-      onClick={() => isWork && item.link && window.open(item.link, '_blank')}
+      onClick={() => isWork && onCardClick(item)}
       style={{
-        cursor: isWork && item.link ? 'pointer' : 'default',
+        cursor: isWork ? 'pointer' : 'default',
         borderRadius: '12px',
         overflow: 'hidden',
         position: 'relative',
@@ -136,7 +137,7 @@ function Card({ item, index, isWork }) {
         fontFamily: "'Inter', sans-serif",
         border: '1px solid rgba(255,255,255,0.15)',
       }}>
-        {isWork ? (item.category || '') : CATEGORIES.find(c => c.key === item.category)?.label || item.category}
+        {catLabel}
       </div>
 
       <div style={{
@@ -153,6 +154,56 @@ function Card({ item, index, isWork }) {
   )
 }
 
+function Lightbox({ src, onClose }) {
+  useEffect(() => {
+    function onKey(e) { if (e.key === 'Escape') onClose() }
+    window.addEventListener('keydown', onKey)
+    return () => window.removeEventListener('keydown', onKey)
+  }, [onClose])
+
+  return (
+    <motion.div
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 0 }}
+      transition={{ duration: 0.2 }}
+      onClick={onClose}
+      style={{
+        position: 'fixed', inset: 0,
+        background: 'rgba(0,0,0,0.92)',
+        display: 'flex', alignItems: 'center', justifyContent: 'center',
+        zIndex: 9999, cursor: 'zoom-out', padding: '24px',
+      }}
+    >
+      <button
+        onClick={onClose}
+        style={{
+          position: 'fixed', top: 20, right: 24,
+          background: 'rgba(255,255,255,0.12)', border: '1px solid rgba(255,255,255,0.2)',
+          color: '#fff', width: 40, height: 40,
+          borderRadius: '50%', cursor: 'pointer', fontSize: 20,
+          display: 'flex', alignItems: 'center', justifyContent: 'center',
+        }}
+      >×</button>
+      <motion.img
+        initial={{ scale: 0.92, opacity: 0 }}
+        animate={{ scale: 1, opacity: 1 }}
+        exit={{ scale: 0.92, opacity: 0 }}
+        transition={{ duration: 0.25, ease: [0.22, 1, 0.36, 1] }}
+        src={src}
+        alt=""
+        onClick={e => e.stopPropagation()}
+        style={{
+          maxWidth: '90vw', maxHeight: '90vh',
+          objectFit: 'contain', borderRadius: '8px',
+          boxShadow: '0 24px 80px rgba(0,0,0,0.8)',
+          cursor: 'default',
+        }}
+      />
+    </motion.div>
+  )
+}
+
 const PER_PAGE = 9
 
 export default function Gallery() {
@@ -160,6 +211,7 @@ export default function Gallery() {
   const [loading, setLoading] = useState(true)
   const [active, setActive]   = useState('all')
   const [page, setPage]       = useState(1)
+  const [lightbox, setLightbox] = useState(null)
 
   useEffect(() => {
     if (!isSupabaseReady) { setLoading(false); return }
@@ -171,7 +223,20 @@ export default function Gallery() {
       })
   }, [])
 
-  // 카테고리 바뀌면 첫 페이지로
+  function handleCardClick(item) {
+    // 상세페이지: 항상 라이트박스
+    if (item.category === 'detail') {
+      setLightbox(item.image_url)
+      return
+    }
+    // 웹·앱: 링크(PDF 포함) 있으면 열기, 없으면 라이트박스
+    if (item.link) {
+      window.open(item.link, '_blank')
+      return
+    }
+    setLightbox(item.image_url)
+  }
+
   const handleCategory = (key) => { setActive(key); setPage(1) }
 
   const source   = works.length > 0 ? works : placeholders
@@ -205,7 +270,7 @@ export default function Gallery() {
       <div className="gallery-tilt-grid">
         <AnimatePresence mode="popLayout">
           {paged.map((item, i) => (
-            <Card key={item.id} item={item} index={i} isWork={isWork} />
+            <Card key={item.id} item={item} index={i} isWork={isWork} onCardClick={handleCardClick} />
           ))}
         </AnimatePresence>
       </div>
@@ -226,7 +291,6 @@ export default function Gallery() {
 
       {total >= 1 && (
         <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', gap: '8px', marginTop: '60px', paddingBottom: '20px' }}>
-          {/* 이전 */}
           <button
             onClick={() => setPage(p => Math.max(1, p - 1))}
             disabled={page === 1}
@@ -240,7 +304,6 @@ export default function Gallery() {
             }}
           >‹</button>
 
-          {/* 페이지 번호 */}
           {Array.from({ length: total }, (_, i) => i + 1).map(n => (
             <button
               key={n}
@@ -259,7 +322,6 @@ export default function Gallery() {
             >{n}</button>
           ))}
 
-          {/* 다음 */}
           <button
             onClick={() => setPage(p => Math.min(total, p + 1))}
             disabled={page === total}
@@ -274,6 +336,11 @@ export default function Gallery() {
           >›</button>
         </div>
       )}
+
+      {/* 라이트박스 */}
+      <AnimatePresence>
+        {lightbox && <Lightbox src={lightbox} onClose={() => setLightbox(null)} />}
+      </AnimatePresence>
     </div>
   )
 }

@@ -110,7 +110,9 @@ function WorkCard({ work, onDelete, onSaved }) {
   const [saving, setSaving] = useState(false)
   const [imgUploading, setImgUploading] = useState(false)
   const [imgHover, setImgHover] = useState(false)
+  const [pdfUploading, setPdfUploading] = useState(false)
   const fileInputRef = useState(null)
+  const pdfInputRef = useState(null)
 
   async function handleSave() {
     setSaving(true)
@@ -132,6 +134,26 @@ function WorkCard({ work, onDelete, onSaved }) {
   function handleCancel() {
     setForm({ category: work.category || 'web', link: work.link || '' })
     setEditing(false)
+  }
+
+  async function handlePdfChange(e) {
+    const pdfFile = e.target.files[0]
+    if (!pdfFile) return
+    setPdfUploading(true)
+    try {
+      const fileName = `pdf_${Date.now()}.pdf`
+      const { error: uploadError } = await supabase.storage
+        .from('works-images')
+        .upload(fileName, pdfFile, { contentType: 'application/pdf' })
+      if (uploadError) throw uploadError
+      const { data: { publicUrl } } = supabase.storage.from('works-images').getPublicUrl(fileName)
+      setForm(p => ({ ...p, link: publicUrl }))
+    } catch (err) {
+      alert('PDF 업로드 실패: ' + err.message)
+    } finally {
+      setPdfUploading(false)
+      e.target.value = ''
+    }
   }
 
   async function handleImageChange(e) {
@@ -221,13 +243,51 @@ function WorkCard({ work, onDelete, onSaved }) {
           >
             {WORK_CATEGORIES.map(c => <option key={c.key} value={c.key} style={{ background: '#1a1a1a', color: '#fff' }}>{c.label}</option>)}
           </select>
-          <input
-            type="url"
-            placeholder="링크 (선택)"
-            value={form.link}
-            onChange={(e) => setForm(p => ({ ...p, link: e.target.value }))}
-            style={{ ...S.input, fontSize: 13, padding: '7px 10px', marginBottom: 10 }}
-          />
+
+          {/* 웹디자인: URL 입력 */}
+          {form.category === 'web' && (
+            <input
+              type="url"
+              placeholder="사이트 링크 (선택)"
+              value={form.link}
+              onChange={(e) => setForm(p => ({ ...p, link: e.target.value }))}
+              style={{ ...S.input, fontSize: 13, padding: '7px 10px', marginBottom: 10 }}
+            />
+          )}
+
+          {/* 앱디자인: PDF 업로드 */}
+          {form.category === 'app' && (
+            <div style={{ marginBottom: 10 }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 6 }}>
+                <span style={{ fontSize: 12, color: form.link ? '#4ade80' : 'rgba(255,255,255,0.3)' }}>
+                  {form.link ? 'PDF 등록됨 ✓' : 'PDF 없음'}
+                </span>
+                {form.link && (
+                  <a href={form.link} target="_blank" rel="noopener noreferrer"
+                    style={{ fontSize: 11, color: '#60a5fa' }}>미리보기</a>
+                )}
+              </div>
+              <button
+                type="button"
+                onClick={() => pdfInputRef[0]?.click()}
+                disabled={pdfUploading}
+                style={{ ...S.btnPrimary, fontSize: 12, padding: '6px 14px', background: 'rgba(255,255,255,0.1)', color: '#fff', opacity: pdfUploading ? 0.5 : 1 }}
+              >
+                {pdfUploading ? <Loader2 size={12} style={{ animation: 'spin 1s linear infinite' }} /> : <Upload size={12} />}
+                {pdfUploading ? 'PDF 업로드 중...' : 'PDF 업로드'}
+              </button>
+              <input type="file" accept="application/pdf" style={{ display: 'none' }}
+                ref={(el) => { pdfInputRef[0] = el }} onChange={handlePdfChange} />
+            </div>
+          )}
+
+          {/* 상세페이지: 링크 없음 (라이트박스로 이미지 표시) */}
+          {form.category === 'detail' && (
+            <p style={{ fontSize: 11, color: 'rgba(255,255,255,0.3)', marginBottom: 10, margin: '0 0 10px' }}>
+              클릭 시 이미지 라이트박스로 표시됩니다
+            </p>
+          )}
+
           <div style={{ display: 'flex', gap: 6 }}>
             <button onClick={handleSave} disabled={saving}
               style={{ ...S.btnPrimary, fontSize: 12, padding: '6px 12px', flex: 1, justifyContent: 'center', opacity: saving ? 0.5 : 1 }}>
@@ -269,6 +329,7 @@ function WorksTab() {
   const [file, setFile] = useState(null)
   const [category, setCategory] = useState('web')
   const [link, setLink] = useState('')
+  const [pdfFile, setPdfFile] = useState(null)
   const [uploading, setUploading] = useState(false)
   const [error, setError] = useState('')
   const [success, setSuccess] = useState('')
@@ -299,6 +360,7 @@ function WorksTab() {
     setError('')
     setSuccess('')
     try {
+      // 이미지 업로드
       const ext = file.name.split('.').pop()
       const fileName = `${Date.now()}.${ext}`
       const { error: storageError } = await supabase.storage
@@ -310,15 +372,28 @@ function WorksTab() {
         .from('works-images')
         .getPublicUrl(fileName)
 
+      // PDF 업로드 (앱디자인)
+      let finalLink = link || null
+      if (category === 'app' && pdfFile) {
+        const pdfName = `pdf_${Date.now()}.pdf`
+        const { error: pdfError } = await supabase.storage
+          .from('works-images')
+          .upload(pdfName, pdfFile, { contentType: 'application/pdf' })
+        if (pdfError) throw pdfError
+        const { data: { publicUrl: pdfUrl } } = supabase.storage.from('works-images').getPublicUrl(pdfName)
+        finalLink = pdfUrl
+      }
+
       const { error: dbError } = await supabase
         .from('works')
-        .insert({ image_url: publicUrl, category, link: link || null })
+        .insert({ image_url: publicUrl, category, link: finalLink })
       if (dbError) throw dbError
 
       setSuccess('등록 완료!')
       setFile(null)
       setCategory('web')
       setLink('')
+      setPdfFile(null)
       e.target.reset()
       fetchWorks()
     } catch (err) {
@@ -371,15 +446,35 @@ function WorksTab() {
               {WORK_CATEGORIES.map(c => <option key={c.key} value={c.key} style={{ background: '#1a1a1a', color: '#fff' }}>{c.label}</option>)}
             </select>
           </Field>
-          <Field label="포트폴리오 링크 (선택)">
-            <input
-              type="url"
-              placeholder="https://..."
-              value={link}
-              onChange={(e) => setLink(e.target.value)}
-              style={S.input}
-            />
-          </Field>
+          {/* 웹디자인: URL 입력 */}
+          {category === 'web' && (
+            <Field label="사이트 링크 (선택)">
+              <input
+                type="url"
+                placeholder="https://..."
+                value={link}
+                onChange={(e) => setLink(e.target.value)}
+                style={S.input}
+              />
+            </Field>
+          )}
+          {/* 앱디자인: PDF 파일 */}
+          {category === 'app' && (
+            <Field label="PDF 파일 (선택)">
+              <input
+                type="file"
+                accept="application/pdf"
+                onChange={(e) => setPdfFile(e.target.files[0])}
+                style={{ color: 'rgba(255,255,255,0.6)', fontSize: 13, cursor: 'pointer' }}
+              />
+            </Field>
+          )}
+          {/* 상세페이지: 안내 */}
+          {category === 'detail' && (
+            <p style={{ fontSize: 12, color: 'rgba(255,255,255,0.3)', margin: '0 0 14px' }}>
+              클릭 시 이미지가 라이트박스로 표시됩니다
+            </p>
+          )}
           <Msg error={error} success={success} />
           <button
             type="submit"
