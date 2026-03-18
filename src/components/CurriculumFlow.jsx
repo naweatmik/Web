@@ -1,5 +1,5 @@
-import { useRef, useState, useEffect } from 'react'
-import { motion, useScroll, useTransform } from 'framer-motion'
+import { useState, useEffect } from 'react'
+import { motion } from 'framer-motion'
 import { curriculum as defaultCurriculum } from '../data/content'
 import { supabase, isSupabaseReady } from '../lib/supabase'
 
@@ -8,10 +8,10 @@ const groups = [
   { label: '디자인',     color: '#3B82F6', steps: [2, 3, 4] },
   { label: '웹개발',     color: '#8B5CF6', steps: [5, 6, 7] },
   { label: '포트폴리오', color: '#22C55E', steps: [8, 9, 10] },
+  { label: '그외',       color: '#F59E0B', steps: [11, 12] },
 ]
 
 export default function CurriculumFlow() {
-  const sectionRef = useRef(null)
   const [curriculum, setCurriculum] = useState(defaultCurriculum)
 
   useEffect(() => {
@@ -21,18 +21,17 @@ export default function CurriculumFlow() {
       .select('*')
       .order('step', { ascending: true })
       .then(({ data }) => {
-        if (data && data.length > 0) setCurriculum(data)
+        if (data && data.length > 0) {
+          // DB 데이터에 없는 step은 로컬 기본값으로 보완
+          const dbSteps = data.map((d) => d.step)
+          const missing = defaultCurriculum.filter((c) => !dbSteps.includes(c.step))
+          setCurriculum([...data, ...missing].sort((a, b) => a.step - b.step))
+        }
       })
   }, [])
 
-  const { scrollYProgress } = useScroll({
-    target: sectionRef,
-    offset: ['start end', 'end start'],
-  })
-  const bgY = useTransform(scrollYProgress, [0, 1], ['-20px', '60px'])
-
   return (
-    <div ref={sectionRef} style={{ position: 'relative' }}>
+    <div style={{ position: 'relative', overflow: 'visible' }}>
 
 
       {/* 섹션 헤더 */}
@@ -83,7 +82,7 @@ export default function CurriculumFlow() {
                   key={step}
                   initial={{ opacity: 0, y: 30 }}
                   whileInView={{ opacity: 1, y: 0 }}
-                  viewport={{ once: false, margin: '-50px' }}
+                  viewport={{ once: false, amount: 0 }}
                   transition={{ duration: 0.55, delay: sIdx * 0.08, ease: [0.22, 1, 0.36, 1] }}
                   style={{
                     position: 'relative',

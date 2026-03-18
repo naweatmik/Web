@@ -1,23 +1,22 @@
 import { useRef } from 'react'
-import { motion, useScroll, useTransform, useMotionValueEvent } from 'framer-motion'
+import { useScroll, useTransform, useMotionValueEvent } from 'framer-motion'
 
 export default function Hero() {
-  const heroRef  = useRef(null)
-  const maskGRef = useRef(null)   // SVG <g> 를 직접 조작해 HTML 텍스트와 동기화
+  const heroRef    = useRef(null)
+  const maskGRef   = useRef(null)  // SVG <g>
+  const textDivRef = useRef(null)  // HTML 텍스트 div
 
   const { scrollYProgress } = useScroll({
     target: heroRef,
     offset: ['start start', 'end end'],
   })
 
-  const textY    = useTransform(scrollYProgress, [0, 0.6], ['62vh', '0vh'])
-  const textYVh  = useTransform(scrollYProgress, [0, 0.6], [62, 0])
+  const textYVh = useTransform(scrollYProgress, [0, 0.6], [56, 0])
 
-  // SVG 마스크 텍스트를 HTML 텍스트와 동기화
+  // SVG 마스크 + HTML 텍스트 동시에 직접 DOM 조작 (motion.div 경고 제거)
   useMotionValueEvent(textYVh, 'change', (v) => {
-    if (maskGRef.current) {
-      maskGRef.current.style.transform = `translateY(${v}vh)`
-    }
+    if (maskGRef.current)   maskGRef.current.style.transform   = `translateY(${v}vh)`
+    if (textDivRef.current) textDivRef.current.style.transform = `translateY(${v}vh)`
   })
 
   // SVG 텍스트 공통 스타일 (HTML 텍스트와 동일 — fontSize는 CSS .hero-text로 제어)
@@ -49,15 +48,15 @@ export default function Hero() {
               */}
               <g
                 ref={maskGRef}
-                style={{ transform: 'translateY(62vh)' }}
+                style={{ transform: 'translateY(56vh)' }}
               >
                 <text
                   x="50%" y="50%"
                   textAnchor="middle"
                   dominantBaseline="central"
                   fill="white"
-                  className="hero-text"
-                  style={{ ...svgTextStyle, transform: 'translateY(-10.8vw)' }}
+                  className="hero-text hero-svg-line-top"
+                  style={svgTextStyle}
                 >We are</text>
 
                 <text
@@ -74,8 +73,8 @@ export default function Hero() {
                   textAnchor="middle"
                   dominantBaseline="central"
                   fill="white"
-                  className="hero-text"
-                  style={{ ...svgTextStyle, transform: 'translateY(10.8vw)' }}
+                  className="hero-text hero-svg-line-bottom"
+                  style={svgTextStyle}
                 >Designers</text>
               </g>
             </mask>
@@ -111,7 +110,8 @@ export default function Hero() {
         </div>
 
         {/* ── HTML 텍스트 (흰색, z:3) ── */}
-        <motion.div
+        <div
+          ref={textDivRef}
           style={{
             position: 'absolute',
             inset: 0,
@@ -121,13 +121,13 @@ export default function Hero() {
             alignItems: 'center',
             textAlign: 'center',
             zIndex: 3,
-            y: textY,
+            transform: 'translateY(56vh)',
           }}
         >
           <span className="hero-text">We are</span>
           <span className="hero-text">Creative</span>
           <span className="hero-text">Designers</span>
-        </motion.div>
+        </div>
 
         {/* ── 원본 이미지 (z:2) ── */}
         <div

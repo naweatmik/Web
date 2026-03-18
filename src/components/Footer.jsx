@@ -6,13 +6,11 @@ export default function Footer() {
       <div style={{ paddingTop: '40px', paddingBottom: '0', paddingLeft: '24px', paddingRight: '24px' }}>
 
         {/* ── 상단 CTA 카드 ── */}
-        <div style={{
+        <div className="footer-cta" style={{
           background: '#fff',
           borderRadius: '20px',
           border: '1px solid rgba(0,0,0,0.1)',
-          padding: '36px 48px',
           display: 'flex',
-          alignItems: 'center',
           justifyContent: 'space-between',
           marginBottom: '16px',
           cursor: 'pointer',
@@ -34,7 +32,7 @@ export default function Footer() {
         <div className="footer-grid" style={{ display: 'grid', gap: '12px', marginBottom: '16px' }}>
 
           {/* Contact (Blue) */}
-          <div style={{
+          <div className="footer-card-min" style={{
             background: '#2D3FE7',
             borderRadius: '20px',
             padding: '28px',
@@ -70,8 +68,8 @@ export default function Footer() {
           </div>
 
           {/* Info (Dark Gray) */}
-          <div style={{
-            background: '#1A1A1A',
+          <div className="footer-card-min" style={{
+            background: 'linear-gradient(135deg, #6366f1 0%, #a855f7 60%, #ec4899 100%)',
             borderRadius: '20px',
             padding: '28px',
             display: 'flex',
@@ -79,14 +77,15 @@ export default function Footer() {
             justifyContent: 'flex-end',
             minHeight: '260px',
             gap: '20px',
+            position: 'relative',
+            overflow: 'hidden',
           }}>
-            <h3 style={{ fontSize: '15px', fontWeight: 700, color: 'rgba(255,255,255,0.4)', marginBottom: 'auto', marginTop: 0 }}>Info</h3>
-            <div>
-              <span style={{ fontSize: '10px', color: 'rgba(255,255,255,0.4)', letterSpacing: '0.18em', textTransform: 'uppercase', display: 'block', marginBottom: '6px' }}>Address</span>
-              <p style={{ fontSize: '14px', lineHeight: 1.5, margin: 0 }}>대구광역시 중구 동성로3가 동성로1길 15 5층</p>
-            </div>
-            <div>
-            
+            {/* 광택 하이라이트 */}
+            <div style={{ position: 'absolute', top: 0, left: 0, right: 0, height: '50%', background: 'linear-gradient(to bottom, rgba(255,255,255,0.15), transparent)', pointerEvents: 'none' }} />
+            <h3 style={{ fontSize: '15px', fontWeight: 700, color: 'rgba(255,255,255,0.6)', marginBottom: 'auto', marginTop: 0, position: 'relative' }}>Info</h3>
+            <div style={{ position: 'relative' }}>
+              <span style={{ fontSize: '10px', color: 'rgba(255,255,255,0.55)', letterSpacing: '0.18em', textTransform: 'uppercase', display: 'block', marginBottom: '6px' }}>Address</span>
+              <p style={{ fontSize: '14px', lineHeight: 1.5, margin: 0, color: '#ffffff', fontWeight: 500 }}>대구광역시 중구 동성로3가 동성로1길 15 5층</p>
             </div>
           </div>
 
@@ -149,7 +148,7 @@ export default function Footer() {
 
 function SocialButton({ label, bg, labelColor = '#fff' }) {
   return (
-    <a href="#" style={{
+    <a href="#" onClick={e => e.preventDefault()} style={{
       background: bg,
       borderRadius: '14px',
       aspectRatio: '1',

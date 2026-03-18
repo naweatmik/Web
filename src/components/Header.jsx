@@ -3,6 +3,7 @@ import { Menu, X } from 'lucide-react'
 import { motion, AnimatePresence } from 'framer-motion'
 
 const navLinks = [
+  { label: '학과소개', href: '#about' },
   { label: '커리큘럼', href: '#curriculum' },
   { label: '강사소개', href: '#instructor' },
   { label: '작업물', href: '#works' },

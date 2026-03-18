@@ -207,6 +207,7 @@ body {
 @media (max-width: 767px) {
   .section-dark,
   .section-light { padding: 120px 0; }
+  #curriculum { padding: 60px 0; }
 }
 
 /* ═══════════════════════════════════════════════════════
@@ -330,6 +331,17 @@ body {
   display: block;
 }
 
+/* SVG 마스크 텍스트 행 오프셋 — font-size × line-height */
+.hero-svg-line-top    { transform: translateY(-10.8vw); } /* 12vw × 0.9 */
+.hero-svg-line-bottom { transform: translateY(10.8vw);  }
+
+@media (max-width: 767px) {
+  .hero-text            { font-size: 16vw; }
+  .hero-svg-line-top    { transform: translateY(-14.4vw); } /* 16vw × 0.9 */
+  .hero-svg-line-bottom { transform: translateY(14.4vw);  }
+  .hero-img-wrap        { width: 72vw; }
+}
+
 /* iOS HIG — frosted glass panel */
 .hero-glass-panel {
   display: flex;
@@ -366,6 +378,26 @@ body {
 }
 
 /* ═══════════════════════════════════════════════════════
+   ABOUT SECTION
+═══════════════════════════════════════════════════════ */
+
+.about-bento {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+
+.about-bento-full {
+  grid-column: 1 / -1;
+}
+
+@media (max-width: 767px) {
+  .about-bento {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* ═══════════════════════════════════════════════════════
    INSTRUCTOR GRID
 ═══════════════════════════════════════════════════════ */
 
@@ -396,10 +428,10 @@ body {
   .gallery-tilt-grid { grid-template-columns: repeat(3, 1fr); gap: 28px; padding: 0 40px; }
 }
 @media (max-width: 767px) {
-  .gallery-tilt-grid { grid-template-columns: repeat(2, 1fr); gap: 20px; padding: 0 24px; }
+  .gallery-tilt-grid { grid-template-columns: repeat(2, 1fr); gap: 16px; padding: 0 24px; }
 }
-@media (max-width: 480px) {
-  .gallery-tilt-grid { grid-template-columns: repeat(2, 1fr); gap: 14px; padding: 0 16px; }
+@media (max-width: 420px) {
+  .gallery-tilt-grid { grid-template-columns: 1fr; gap: 20px; padding: 0 20px; }
 }
 
 /* ═══════════════════════════════════════════════════════
@@ -407,7 +439,11 @@ body {
 ═══════════════════════════════════════════════════════ */
 
 .footer-grid { grid-template-columns: 1fr; }
+.footer-cta  { flex-direction: column; align-items: flex-start !important; gap: 16px; padding: 28px 24px !important; }
+.footer-card-min { min-height: auto !important; }
 
 @media (min-width: 768px) {
   .footer-grid { grid-template-columns: 5fr 4fr 4fr; }
+  .footer-cta  { flex-direction: row; align-items: center !important; gap: 0; padding: 36px 48px !important; }
+  .footer-card-min { min-height: 260px !important; }
 }
