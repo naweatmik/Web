@@ -137,19 +137,21 @@ function WorkCard({ work, onDelete, onSaved }) {
   }
 
   async function handlePdfChange(e) {
-    const pdfFile = e.target.files[0]
-    if (!pdfFile) return
+    const uploadFile = e.target.files[0]
+    if (!uploadFile) return
     setPdfUploading(true)
     try {
-      const fileName = `pdf_${Date.now()}.pdf`
+      const ext = uploadFile.name.split('.').pop()
+      const fileName = `extra_${Date.now()}.${ext}`
+      const contentType = form.category === 'app' ? 'application/pdf' : uploadFile.type
       const { error: uploadError } = await supabase.storage
         .from('works-images')
-        .upload(fileName, pdfFile, { contentType: 'application/pdf' })
+        .upload(fileName, uploadFile, { contentType })
       if (uploadError) throw uploadError
       const { data: { publicUrl } } = supabase.storage.from('works-images').getPublicUrl(fileName)
       setForm(p => ({ ...p, link: publicUrl }))
     } catch (err) {
-      alert('PDF 업로드 실패: ' + err.message)
+      alert('업로드 실패: ' + err.message)
     } finally {
       setPdfUploading(false)
       e.target.value = ''
@@ -281,11 +283,30 @@ function WorkCard({ work, onDelete, onSaved }) {
             </div>
           )}
 
-          {/* 상세페이지: 링크 없음 (라이트박스로 이미지 표시) */}
+          {/* 상세페이지: 원본 이미지 업로드 */}
           {form.category === 'detail' && (
-            <p style={{ fontSize: 11, color: 'rgba(255,255,255,0.3)', marginBottom: 10, margin: '0 0 10px' }}>
-              클릭 시 이미지 라이트박스로 표시됩니다
-            </p>
+            <div style={{ marginBottom: 10 }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 6 }}>
+                <span style={{ fontSize: 12, color: form.link ? '#4ade80' : 'rgba(255,255,255,0.3)' }}>
+                  {form.link ? '원본 이미지 등록됨 ✓' : '원본 없음 (썸네일로 표시)'}
+                </span>
+                {form.link && (
+                  <a href={form.link} target="_blank" rel="noopener noreferrer"
+                    style={{ fontSize: 11, color: '#60a5fa' }}>미리보기</a>
+                )}
+              </div>
+              <button
+                type="button"
+                onClick={() => pdfInputRef[0]?.click()}
+                disabled={pdfUploading}
+                style={{ ...S.btnPrimary, fontSize: 12, padding: '6px 14px', background: 'rgba(255,255,255,0.1)', color: '#fff', opacity: pdfUploading ? 0.5 : 1 }}
+              >
+                {pdfUploading ? <Loader2 size={12} style={{ animation: 'spin 1s linear infinite' }} /> : <Upload size={12} />}
+                {pdfUploading ? '업로드 중...' : '원본 이미지 업로드'}
+              </button>
+              <input type="file" accept="image/*" style={{ display: 'none' }}
+                ref={(el) => { pdfInputRef[0] = el }} onChange={handlePdfChange} />
+            </div>
           )}
 
           <div style={{ display: 'flex', gap: 6 }}>
@@ -372,16 +393,18 @@ function WorksTab() {
         .from('works-images')
         .getPublicUrl(fileName)
 
-      // PDF 업로드 (앱디자인)
+      // 앱디자인: PDF / 상세페이지: 원본 이미지 업로드 → link 필드에 저장
       let finalLink = link || null
-      if (category === 'app' && pdfFile) {
-        const pdfName = `pdf_${Date.now()}.pdf`
-        const { error: pdfError } = await supabase.storage
+      if ((category === 'app' || category === 'detail') && pdfFile) {
+        const ext = pdfFile.name.split('.').pop()
+        const extraName = `extra_${Date.now()}.${ext}`
+        const contentType = category === 'app' ? 'application/pdf' : pdfFile.type
+        const { error: extraError } = await supabase.storage
           .from('works-images')
-          .upload(pdfName, pdfFile, { contentType: 'application/pdf' })
-        if (pdfError) throw pdfError
-        const { data: { publicUrl: pdfUrl } } = supabase.storage.from('works-images').getPublicUrl(pdfName)
-        finalLink = pdfUrl
+          .upload(extraName, pdfFile, { contentType })
+        if (extraError) throw extraError
+        const { data: { publicUrl: extraUrl } } = supabase.storage.from('works-images').getPublicUrl(extraName)
+        finalLink = extraUrl
       }
 
       const { error: dbError } = await supabase
@@ -469,11 +492,16 @@ function WorksTab() {
               />
             </Field>
           )}
-          {/* 상세페이지: 안내 */}
+          {/* 상세페이지: 원본 이미지 업로드 */}
           {category === 'detail' && (
-            <p style={{ fontSize: 12, color: 'rgba(255,255,255,0.3)', margin: '0 0 14px' }}>
-              클릭 시 이미지가 라이트박스로 표시됩니다
-            </p>
+            <Field label="원본 이미지 (선택 — 클릭 시 라이트박스에 표시)">
+              <input
+                type="file"
+                accept="image/*"
+                onChange={(e) => setPdfFile(e.target.files[0])}
+                style={{ color: 'rgba(255,255,255,0.6)', fontSize: 13, cursor: 'pointer' }}
+              />
+            </Field>
           )}
           <Msg error={error} success={success} />
           <button

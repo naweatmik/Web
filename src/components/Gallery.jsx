@@ -224,9 +224,9 @@ export default function Gallery() {
   }, [])
 
   function handleCardClick(item) {
-    // 상세페이지: 항상 라이트박스
+    // 상세페이지: 원본 이미지(link) 있으면 원본으로, 없으면 썸네일로 라이트박스
     if (item.category === 'detail') {
-      setLightbox(item.image_url)
+      setLightbox(item.link || item.image_url)
       return
     }
     // 웹·앱: 링크(PDF 포함) 있으면 열기, 없으면 라이트박스
