@@ -1081,6 +1081,22 @@ function AboutTab() {
             <p style={{ margin: 0, fontSize: 12, color: 'rgba(255,255,255,0.3)' }}>섹션 3 — 웹디자인 vs 편집디자인</p>
           </div>
           <div style={{ display: 'flex', gap: 8 }}>
+            <button
+              onClick={async () => {
+                if (!window.confirm('content.js 기본값으로 초기화하고 저장할까요?')) return
+                const defaultRows = aboutCourse.comparison.rows.map((r) => ({ aspect: r.aspect, web: r.web, print: r.print }))
+                setCompRows(defaultRows)
+                setCompSaving(true); setCompMsg({ error: '', success: '' })
+                try {
+                  await saveContent('about_comparison', { meta: compMeta, rows: defaultRows })
+                  setCompMsg({ error: '', success: '기본값으로 초기화 완료!' })
+                } catch (err) { setCompMsg({ error: err.message, success: '' }) }
+                finally { setCompSaving(false) }
+              }}
+              style={{ ...S.btnPrimary, background: 'rgba(255,255,255,0.08)', color: 'rgba(255,255,255,0.6)', fontSize: 12 }}
+            >
+              기본값 초기화
+            </button>
             <button onClick={() => setCompRows((p) => [...p, { aspect: '', web: '', print: '' }])} style={{ ...S.btnPrimary, background: 'rgba(255,255,255,0.1)', color: '#fff' }}>
               <Plus size={15} /> 행 추가
             </button>

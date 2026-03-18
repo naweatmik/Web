@@ -1,0 +1,111 @@
+/* ═══════════════════════════════════════════════════════
+   HEADER
+═══════════════════════════════════════════════════════ */
+
+.site-header {
+  position: fixed;
+  top: 0; left: 0; right: 0;
+  z-index: 50;
+  transition: transform 0.35s ease, background 0.3s, backdrop-filter 0.3s, border-color 0.3s;
+}
+
+.header-inner {
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 0 48px;
+  height: 68px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.header-logo {
+  color: #fff;
+  font-weight: 900;
+  font-size: 15px;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  background: none;
+  border: none;
+  cursor: pointer;
+  opacity: 1;
+  transition: opacity 0.2s;
+}
+.header-logo:hover { opacity: 0.6; }
+
+.desktop-nav {
+  display: flex;
+  align-items: center;
+  gap: 40px;
+}
+
+.nav-btn {
+  color: rgba(255,255,255,0.65);
+  font-size: 13px;
+  font-weight: 500;
+  letter-spacing: 0.04em;
+  background: none;
+  border: none;
+  cursor: pointer;
+  transition: color 0.2s;
+  padding: 4px 0;
+}
+.nav-btn:hover { color: #fff; }
+
+.mobile-menu-btn { display: none !important; }
+
+.mobile-drawer-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.6);
+  z-index: 40;
+}
+
+.mobile-drawer {
+  position: fixed;
+  top: 0; right: 0;
+  height: 100%;
+  width: 280px;
+  background: #111;
+  z-index: 50;
+  display: flex;
+  flex-direction: column;
+  padding-top: 80px;
+  padding-left: 36px;
+  padding-right: 36px;
+}
+
+.mobile-drawer-close {
+  position: absolute;
+  top: 20px;
+  right: 24px;
+  color: rgba(255,255,255,0.45);
+  background: none;
+  border: none;
+  cursor: pointer;
+}
+
+.mobile-nav {
+  display: flex;
+  flex-direction: column;
+  gap: 28px;
+}
+
+.mobile-nav-btn {
+  color: #fff;
+  font-size: 26px;
+  font-weight: 800;
+  text-align: left;
+  background: none;
+  border: none;
+  cursor: pointer;
+  opacity: 1;
+  transition: opacity 0.2s;
+}
+.mobile-nav-btn:hover { opacity: 0.5; }
+
+@media (max-width: 767px) {
+  .desktop-nav     { display: none !important; }
+  .mobile-menu-btn { display: block !important; }
+  .header-inner    { padding: 0 20px; }
+}

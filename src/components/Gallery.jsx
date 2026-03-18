@@ -1,3 +1,4 @@
+import './Gallery.css'
 import { useEffect, useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { supabase, isSupabaseReady } from '../lib/supabase'
@@ -22,55 +23,21 @@ const TILTS = [-2.4, 1.7, -1.2, 2.6, -1.8, 1.3]
 
 function FilterTabs({ active, onChange }) {
   return (
-    <div style={{ display: 'flex', justifyContent: 'center', marginBottom: 'clamp(40px, 6vw, 72px)', position: 'relative', zIndex: 1 }}>
-      <div style={{
-        position: 'relative',
-        display: 'flex',
-        gap: '4px',
-        background: 'rgba(255,255,255,0.06)',
-        backdropFilter: 'blur(20px) saturate(160%)',
-        WebkitBackdropFilter: 'blur(20px) saturate(160%)',
-        borderRadius: '100px',
-        padding: '5px',
-        border: '1px solid rgba(255,255,255,0.18)',
-        boxShadow: '0 8px 40px rgba(0,0,0,0.5), inset 0 1px 0 rgba(255,255,255,0.4), inset 0 -1px 0 rgba(0,0,0,0.2), inset 1px 0 0 rgba(255,255,255,0.15), inset -1px 0 0 rgba(255,255,255,0.06)',
-        overflow: 'hidden',
-      }}>
-        {/* 표면 반사 shimmer */}
-        <div style={{ position: 'absolute', inset: 0, borderRadius: '100px', background: 'linear-gradient(160deg, rgba(255,255,255,0.18) 0%, rgba(255,255,255,0.04) 40%, transparent 65%)', pointerEvents: 'none' }} />
-        <div style={{ position: 'absolute', top: 0, left: 0, right: 0, height: '1px', background: 'linear-gradient(90deg, transparent 5%, rgba(255,255,255,0.7) 25%, rgba(255,255,255,1) 50%, rgba(255,255,255,0.7) 75%, transparent 95%)', pointerEvents: 'none' }} />
+    <div className="filter-tabs-wrap">
+      <div className="filter-tabs-inner">
+        <div className="filter-tabs-shimmer" />
+        <div className="filter-tabs-top-border" />
         {CATEGORIES.map(cat => (
           <button
             key={cat.key}
+            className="filter-btn"
             onClick={() => onChange(cat.key)}
-            style={{
-              position: 'relative',
-              padding: 'clamp(7px, 1vw, 10px) clamp(14px, 2vw, 24px)',
-              borderRadius: '100px',
-              border: 'none',
-              background: 'none',
-              cursor: 'pointer',
-              fontSize: 'clamp(12px, 1.1vw, 14px)',
-              fontWeight: 600,
-              fontFamily: "'Pretendard', 'Inter', sans-serif",
-              letterSpacing: '0.02em',
-              color: active === cat.key ? '#0a0a0a' : 'rgba(255,255,255,0.5)',
-              transition: 'color 0.2s',
-              whiteSpace: 'nowrap',
-              zIndex: 1,
-            }}
+            style={{ color: active === cat.key ? '#0a0a0a' : 'rgba(255,255,255,0.5)' }}
           >
             {active === cat.key && (
               <motion.div
                 layoutId="filter-pill"
-                style={{
-                  position: 'absolute',
-                  inset: 0,
-                  background: '#ffffff',
-                  borderRadius: '100px',
-                  zIndex: -1,
-                  boxShadow: '0 2px 12px rgba(255,255,255,0.25)',
-                }}
+                className="filter-btn-pill"
                 transition={{ type: 'spring', stiffness: 380, damping: 30 }}
               />
             )}
@@ -115,54 +82,19 @@ function Card({ item, index, isWork, onCardClick }) {
       }}
     >
       <div style={{ position: 'absolute', inset: 0, borderRadius: '12px', overflow: 'hidden' }}>
-      {isWork && (
-        <img
-          src={item.image_url}
-          alt={item.title || ''}
-          style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }}
-          loading="lazy"
-        />
-      )}
-
-      <div style={{
-        position: 'absolute', inset: 0,
-        pointerEvents: 'none',
-      }} />
-
-      <div style={{
-        position: 'absolute', top: '20px', left: '20px',
-        fontFamily: "'Inter', sans-serif",
-        fontSize: '11px', fontWeight: 700,
-        letterSpacing: '0.18em',
-        color: 'rgba(255,255,255,0.45)',
-      }}>{num}</div>
-
-      {/* 카테고리 뱃지 */}
-      <div style={{
-        position: 'absolute', top: '18px', right: '18px',
-        fontSize: '9px', fontWeight: 700,
-        letterSpacing: '0.14em', textTransform: 'uppercase',
-        color: 'rgba(255,255,255,0.7)',
-        background: 'rgba(255,255,255,0.12)',
-        backdropFilter: 'blur(8px)',
-        padding: '4px 10px',
-        borderRadius: '100px',
-        fontFamily: "'Inter', sans-serif",
-        border: '1px solid rgba(255,255,255,0.15)',
-      }}>
-        {catLabel}
-      </div>
-
-      <div style={{
-        position: 'absolute', bottom: '22px', left: '20px', right: '20px',
-        fontFamily: "'Inter', 'Pretendard', sans-serif",
-        fontSize: 'clamp(16px, 1.6vw, 22px)',
-        fontWeight: 800, lineHeight: 1.15,
-        letterSpacing: '-0.02em',
-        color: '#ffffff',
-      }}>
-        {isWork ? (item.title || '') : item.title}
-      </div>
+        {isWork && (
+          <img
+            src={item.image_url}
+            alt={item.title || ''}
+            style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }}
+            loading="lazy"
+          />
+        )}
+        <span className="gallery-card-num">{num}</span>
+        <div className="gallery-card-badge">{catLabel}</div>
+        <div className="gallery-card-title">
+          {isWork ? (item.title || '') : item.title}
+        </div>
       </div>
     </motion.div>
   )
@@ -182,32 +114,11 @@ function Lightbox({ src, scrollable, onClose }) {
       exit={{ opacity: 0 }}
       transition={{ duration: 0.2 }}
       onClick={onClose}
-      style={{
-        position: 'fixed', inset: 0,
-        background: 'rgba(0,0,0,0.92)',
-        zIndex: 9999,
-        overflowY: scrollable ? 'auto' : 'hidden',
-        display: scrollable ? 'block' : 'flex',
-        alignItems: scrollable ? undefined : 'center',
-        justifyContent: scrollable ? undefined : 'center',
-        padding: scrollable ? '60px 24px 40px' : '24px',
-        cursor: 'zoom-out',
-      }}
+      className={`lightbox${scrollable ? ' scrollable' : ''}`}
     >
-      <button
-        onClick={onClose}
-        style={{
-          position: 'fixed', top: 20, right: 24,
-          background: 'rgba(255,255,255,0.12)', border: '1px solid rgba(255,255,255,0.2)',
-          color: '#fff', width: 40, height: 40,
-          borderRadius: '50%', cursor: 'pointer', fontSize: 20,
-          display: 'flex', alignItems: 'center', justifyContent: 'center',
-          zIndex: 1,
-        }}
-      >×</button>
+      <button className="lightbox-close" onClick={onClose}>×</button>
 
       {scrollable ? (
-        /* 상세페이지: 세로 스크롤 */
         <motion.img
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
@@ -216,19 +127,9 @@ function Lightbox({ src, scrollable, onClose }) {
           src={src}
           alt=""
           onClick={e => e.stopPropagation()}
-          style={{
-            display: 'block',
-            margin: '0 auto',
-            width: '100%',
-            maxWidth: '560px',
-            height: 'auto',
-            borderRadius: '8px',
-            boxShadow: '0 24px 80px rgba(0,0,0,0.8)',
-            cursor: 'default',
-          }}
+          className="lightbox-img-scroll"
         />
       ) : (
-        /* 일반: 화면 안에 맞춤 */
         <motion.img
           initial={{ scale: 0.92, opacity: 0 }}
           animate={{ scale: 1, opacity: 1 }}
@@ -237,12 +138,7 @@ function Lightbox({ src, scrollable, onClose }) {
           src={src}
           alt=""
           onClick={e => e.stopPropagation()}
-          style={{
-            maxWidth: '90vw', maxHeight: '90vh',
-            objectFit: 'contain', borderRadius: '8px',
-            boxShadow: '0 24px 80px rgba(0,0,0,0.8)',
-            cursor: 'default',
-          }}
+          className="lightbox-img"
         />
       )}
     </motion.div>
@@ -256,7 +152,7 @@ export default function Gallery() {
   const [loading, setLoading] = useState(true)
   const [active, setActive]   = useState('all')
   const [page, setPage]       = useState(1)
-  const [lightbox, setLightbox] = useState(null) // { src, scrollable }
+  const [lightbox, setLightbox] = useState(null)
 
   useEffect(() => {
     if (!isSupabaseReady) { setLoading(false); return }
@@ -269,12 +165,10 @@ export default function Gallery() {
   }, [])
 
   function handleCardClick(item) {
-    // 상세페이지: 세로 스크롤 라이트박스 (원본 있으면 원본, 없으면 썸네일)
     if (item.category === 'detail') {
       setLightbox({ src: item.link || item.image_url, scrollable: true })
       return
     }
-    // 웹·앱: 링크(PDF 포함) 있으면 열기, 없으면 일반 라이트박스
     if (item.link) {
       window.open(item.link, '_blank')
       return
@@ -294,13 +188,7 @@ export default function Gallery() {
     return (
       <div style={{ padding: '0 24px' }}>
         <div className="gallery-tilt-grid">
-          {[0,1,2,3,4,5].map(i => (
-            <div key={i} style={{
-              aspectRatio: '4/3', borderRadius: '12px',
-              background: 'rgba(255,255,255,0.04)',
-              animation: 'pulse 2s ease-in-out infinite',
-            }} />
-          ))}
+          {[0,1,2,3,4,5].map(i => <div key={i} className="gallery-skeleton" />)}
         </div>
       </div>
     )
@@ -321,68 +209,35 @@ export default function Gallery() {
       </motion.div>
 
       {filtered.length === 0 && (
-        <motion.div
-          initial={{ opacity: 0 }} animate={{ opacity: 1 }}
-          style={{
-            textAlign: 'center', padding: '80px 24px',
-            color: 'rgba(255,255,255,0.25)',
-            fontFamily: "'Pretendard', sans-serif",
-            fontSize: '14px',
-          }}
-        >
+        <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="gallery-empty">
           아직 등록된 작품이 없습니다
         </motion.div>
       )}
 
       {total >= 1 && (
-        <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', gap: '8px', marginTop: '60px', paddingBottom: '20px' }}>
+        <div className="gallery-pagination">
           <button
             onClick={() => setPage(p => Math.max(1, p - 1))}
             disabled={page === 1}
-            style={{
-              width: '40px', height: '40px', borderRadius: '50%',
-              border: '1px solid rgba(255,255,255,0.15)',
-              background: 'none', cursor: page === 1 ? 'default' : 'pointer',
-              color: page === 1 ? 'rgba(255,255,255,0.2)' : 'rgba(255,255,255,0.7)',
-              fontSize: '16px', display: 'flex', alignItems: 'center', justifyContent: 'center',
-              transition: 'all 0.2s',
-            }}
+            className="gallery-page-btn"
           >‹</button>
 
           {Array.from({ length: total }, (_, i) => i + 1).map(n => (
             <button
               key={n}
               onClick={() => setPage(n)}
-              style={{
-                width: '40px', height: '40px', borderRadius: '50%',
-                border: '1px solid ' + (page === n ? 'rgba(255,255,255,0.8)' : 'rgba(255,255,255,0.15)'),
-                background: page === n ? '#ffffff' : 'none',
-                cursor: 'pointer',
-                color: page === n ? '#0a0a0a' : 'rgba(255,255,255,0.5)',
-                fontSize: '13px', fontWeight: 700,
-                fontFamily: "'Inter', sans-serif",
-                display: 'flex', alignItems: 'center', justifyContent: 'center',
-                transition: 'all 0.2s',
-              }}
+              className={`gallery-page-num${page === n ? ' active' : ''}`}
             >{n}</button>
           ))}
 
           <button
             onClick={() => setPage(p => Math.min(total, p + 1))}
             disabled={page === total}
-            style={{
-              width: '40px', height: '40px', borderRadius: '50%',
-              border: '1px solid rgba(255,255,255,0.15)',
-              background: 'none', cursor: page === total ? 'default' : 'pointer',
-              color: page === total ? 'rgba(255,255,255,0.2)' : 'rgba(255,255,255,0.7)',
-              fontSize: '16px', display: 'flex', alignItems: 'center', justifyContent: 'center',
-              transition: 'all 0.2s',
-            }}
+            className="gallery-page-btn"
           >›</button>
         </div>
       )}
 
-      {/* 라이트박스 */}
       <AnimatePresence>
         {lightbox && <Lightbox src={lightbox.src} scrollable={lightbox.scrollable} onClose={() => setLightbox(null)} />}
       </AnimatePresence>

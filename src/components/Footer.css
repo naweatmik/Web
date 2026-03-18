@@ -1,0 +1,218 @@
+/* ═══════════════════════════════════════════════════════
+   FOOTER
+═══════════════════════════════════════════════════════ */
+
+.site-footer {
+  background: #000;
+  color: #fff;
+  width: 100%;
+  overflow: hidden;
+  padding-top: 0;
+}
+
+.footer-inner {
+  padding: 40px 24px 0;
+}
+
+/* CTA 카드 */
+.footer-cta {
+  flex-direction: column;
+  align-items: flex-start !important;
+  gap: 16px;
+  padding: 28px 24px !important;
+  background: #fff;
+  border-radius: 20px;
+  border: 1px solid rgba(0,0,0,0.1);
+  display: flex;
+  justify-content: space-between;
+  cursor: pointer;
+}
+
+.footer-cta-heading {
+  font-family: 'Inter', 'Pretendard', sans-serif;
+  font-size: clamp(1.4rem, 3vw, 2.2rem);
+  font-weight: 800;
+  color: #0A0A0A;
+  letter-spacing: -0.03em;
+  margin: 0;
+}
+
+.footer-cta-icon {
+  width: clamp(28px, 3.5vw, 44px);
+  height: clamp(28px, 3.5vw, 44px);
+  flex-shrink: 0;
+}
+
+/* 메인 그리드 */
+.footer-grid { grid-template-columns: 1fr; }
+
+.footer-card {
+  border-radius: 20px;
+  padding: 28px;
+}
+
+.footer-card-min { min-height: auto !important; }
+
+.footer-card-contact {
+  background: #2D3FE7;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+.footer-card-heading {
+  font-size: 15px;
+  font-weight: 700;
+  margin: 0;
+}
+
+.footer-card-text {
+  font-size: 15px;
+  line-height: 1.4;
+  margin-bottom: 20px;
+}
+
+.footer-contact-link {
+  display: block;
+  width: 100%;
+  background: #fff;
+  color: #2D3FE7;
+  border: none;
+  border-radius: 14px;
+  padding: 14px;
+  font-weight: 700;
+  font-size: 14px;
+  cursor: pointer;
+  letter-spacing: 0.04em;
+  text-align: center;
+  text-decoration: none;
+  box-sizing: border-box;
+}
+
+.footer-card-info {
+  background: linear-gradient(135deg, #6366f1 0%, #a855f7 60%, #ec4899 100%);
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  gap: 20px;
+  position: relative;
+  overflow: hidden;
+}
+
+.footer-card-highlight {
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 50%;
+  background: linear-gradient(to bottom, rgba(255,255,255,0.15), transparent);
+  pointer-events: none;
+}
+
+.footer-card-info-heading {
+  font-size: 15px;
+  font-weight: 700;
+  color: rgba(255,255,255,0.6);
+  margin-bottom: auto;
+  margin-top: 0;
+  position: relative;
+}
+
+.footer-address-block { position: relative; }
+
+.footer-address-label {
+  font-size: 10px;
+  color: rgba(255,255,255,0.55);
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  display: block;
+  margin-bottom: 6px;
+}
+
+.footer-address-text {
+  font-size: 14px;
+  line-height: 1.5;
+  margin: 0;
+  color: #ffffff;
+  font-weight: 500;
+}
+
+.footer-card-menu {
+  background: #1A1A1A;
+  flex: 1;
+}
+
+.footer-menu-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px 8px;
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+}
+
+.footer-menu-item {
+  color: rgba(255,255,255,0.7);
+  cursor: pointer;
+  transition: color 0.2s;
+}
+.footer-menu-item:hover { color: #fff; }
+
+.footer-social-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: 12px;
+}
+
+.footer-copyright {
+  font-size: 10px;
+  color: rgba(255,255,255,0.3);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  margin-bottom: 16px;
+}
+
+.footer-wordmark {
+  width: 100%;
+  overflow: hidden;
+  line-height: 0.85;
+}
+
+.footer-wordmark-text {
+  font-family: 'Inter', 'Pretendard', sans-serif;
+  font-size: 14vw;
+  font-weight: 900;
+  letter-spacing: -0.04em;
+  color: #fff;
+  white-space: nowrap;
+  margin: 0;
+  padding-left: 2vw;
+  line-height: 0.9;
+}
+
+/* 소셜 버튼 */
+.social-btn {
+  border-radius: 14px;
+  aspect-ratio: 1;
+  padding: 12px;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  text-decoration: none;
+}
+
+.social-btn-label {
+  font-size: 10px;
+  font-weight: 700;
+  background: rgba(255,255,255,0.25);
+  padding: 3px 8px;
+  border-radius: 6px;
+  display: flex;
+  align-items: center;
+  gap: 3px;
+  width: fit-content;
+}
+
+@media (min-width: 768px) {
+  .footer-grid     { grid-template-columns: 5fr 4fr 4fr; }
+  .footer-cta      { flex-direction: row; align-items: center !important; gap: 0; padding: 36px 48px !important; }
+  .footer-card-min { min-height: 260px !important; }
+}
