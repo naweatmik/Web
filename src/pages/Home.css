@@ -218,6 +218,15 @@
 .compPanelWeb   .compPanelValue { color: rgba(255,255,255,0.92); }
 .compPanelPrint .compPanelValue { color: rgba(255,255,255,0.42); }
 
+@media (min-width: 768px) {
+  .compPanelLabel  { font-size: 13px; }
+  .compPanelAspect { font-size: 12px; }
+  .compPanelValue  { font-size: 17px; }
+}
+@media (min-width: 1280px) {
+  .compPanelValue  { font-size: 19px; }
+}
+
 /* 구형 비교표 (레거시) */
 .compHeader {
   display: grid;
@@ -368,7 +377,7 @@
   gap: 20px;
 }
 
-@media (max-width: 767px) {
+@media (max-width: 575px) {
   .instructorGrid { grid-template-columns: 1fr; }
   .instructorCard3dModel { min-height: 340px; }
 }
