@@ -19,25 +19,27 @@ const placeholders = [
   { id: 6, category: 'detail', title: 'Shopping Page',   grad: 'linear-gradient(160deg,#78350f 0%,#f59e0b 55%,#fde68a 100%)' },
 ]
 
-const TILTS = [-2.4, 1.7, -1.2, 2.6, -1.8, 1.3]
+const TILTS   = [-2.4, 1.7, -1.2, 2.6, -1.8, 1.3]
+// 5카드 주기: wide 2개 → standard 3개
+const ASPECTS = ['16/9', '16/9', '4/3', '4/3', '4/3']
 
 function FilterTabs({ active, onChange }) {
   return (
-    <div className="filter-tabs-wrap">
-      <div className="filter-tabs-inner">
-        <div className="filter-tabs-shimmer" />
-        <div className="filter-tabs-top-border" />
+    <div className="filterTabsWrap">
+      <div className="filterTabsInner">
+        <div className="filterTabsShimmer" />
+        <div className="filterTabsTopBorder" />
         {CATEGORIES.map(cat => (
           <button
             key={cat.key}
-            className="filter-btn"
+            className="filterBtn"
             onClick={() => onChange(cat.key)}
             style={{ color: active === cat.key ? '#0a0a0a' : 'rgba(255,255,255,0.5)' }}
           >
             {active === cat.key && (
               <motion.div
                 layoutId="filter-pill"
-                className="filter-btn-pill"
+                className="filterBtnPill"
                 transition={{ type: 'spring', stiffness: 380, damping: 30 }}
               />
             )}
@@ -50,7 +52,8 @@ function FilterTabs({ active, onChange }) {
 }
 
 function Card({ item, index, isWork, onCardClick }) {
-  const tilt = TILTS[index % TILTS.length]
+  const tilt        = TILTS[index % TILTS.length]
+  const aspectRatio = ASPECTS[index % 5]
   const num  = String(index + 1).padStart(2, '0')
   const catLabel = CATEGORIES.find(c => c.key === item.category)?.label || item.category || ''
   const glowColor = {
@@ -58,6 +61,12 @@ function Card({ item, index, isWork, onCardClick }) {
     app:    'rgba(168,85,247,0.22)',
     detail: 'rgba(16,185,129,0.2)',
   }[item.category] || 'rgba(255,255,255,0.1)'
+
+  const badgeStyle = {
+    web:    { background: '#2D3FE7', color: '#fff', borderColor: '#2D3FE7' },
+    app:    { background: '#a855f7', color: '#fff', borderColor: '#a855f7' },
+    detail: { background: '#ec4899', color: '#fff', borderColor: '#ec4899' },
+  }[item.category] || { background: '#1A1A1A', color: 'rgba(255,255,255,0.7)', borderColor: 'rgba(255,255,255,0.15)' }
 
   return (
     <motion.div
@@ -76,7 +85,7 @@ function Card({ item, index, isWork, onCardClick }) {
         borderRadius: '12px',
         overflow: 'visible',
         position: 'relative',
-        aspectRatio: '4 / 3',
+        aspectRatio,
         background: isWork ? '#111' : item.grad,
         transformOrigin: 'center bottom',
       }}
@@ -90,9 +99,9 @@ function Card({ item, index, isWork, onCardClick }) {
             loading="lazy"
           />
         )}
-        <span className="gallery-card-num">{num}</span>
-        <div className="gallery-card-badge">{catLabel}</div>
-        <div className="gallery-card-title">
+        <span className="galleryCardNum">{num}</span>
+        <div className="galleryCardBadge" style={badgeStyle}>{catLabel}</div>
+        <div className="galleryCardTitle">
           {isWork ? (item.title || '') : item.title}
         </div>
       </div>
@@ -116,7 +125,7 @@ function Lightbox({ src, scrollable, onClose }) {
       onClick={onClose}
       className={`lightbox${scrollable ? ' scrollable' : ''}`}
     >
-      <button className="lightbox-close" onClick={onClose}>×</button>
+      <button className="lightboxClose" onClick={onClose}>×</button>
 
       {scrollable ? (
         <motion.img
@@ -127,7 +136,7 @@ function Lightbox({ src, scrollable, onClose }) {
           src={src}
           alt=""
           onClick={e => e.stopPropagation()}
-          className="lightbox-img-scroll"
+          className="lightboxImgScroll"
         />
       ) : (
         <motion.img
@@ -138,14 +147,14 @@ function Lightbox({ src, scrollable, onClose }) {
           src={src}
           alt=""
           onClick={e => e.stopPropagation()}
-          className="lightbox-img"
+          className="lightboxImg"
         />
       )}
     </motion.div>
   )
 }
 
-const PER_PAGE = 9
+const PER_PAGE = 10  // 5카드 주기 × 2 = 행 완성
 
 export default function Gallery() {
   const [works, setWorks]     = useState([])
@@ -187,8 +196,8 @@ export default function Gallery() {
   if (loading) {
     return (
       <div style={{ padding: '0 24px' }}>
-        <div className="gallery-tilt-grid">
-          {[0,1,2,3,4,5].map(i => <div key={i} className="gallery-skeleton" />)}
+        <div className="galleryTiltGrid">
+          {[0,1,2,3,4,5].map(i => <div key={i} className="gallerySkeleton" />)}
         </div>
       </div>
     )
@@ -200,7 +209,7 @@ export default function Gallery() {
         <FilterTabs active={active} onChange={handleCategory} />
       </div>
 
-      <motion.div layout transition={{ duration: 0.35, ease: [0.22, 1, 0.36, 1] }} className="gallery-tilt-grid">
+      <motion.div layout transition={{ duration: 0.35, ease: [0.22, 1, 0.36, 1] }} className="galleryTiltGrid">
         <AnimatePresence mode="sync">
           {paged.map((item, i) => (
             <Card key={item.id} item={item} index={i} isWork={isWork} onCardClick={handleCardClick} />
@@ -209,31 +218,31 @@ export default function Gallery() {
       </motion.div>
 
       {filtered.length === 0 && (
-        <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="gallery-empty">
+        <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="galleryEmpty">
           아직 등록된 작품이 없습니다
         </motion.div>
       )}
 
       {total >= 1 && (
-        <div className="gallery-pagination">
+        <div className="galleryPagination">
           <button
             onClick={() => setPage(p => Math.max(1, p - 1))}
             disabled={page === 1}
-            className="gallery-page-btn"
+            className="galleryPageBtn"
           >‹</button>
 
           {Array.from({ length: total }, (_, i) => i + 1).map(n => (
             <button
               key={n}
               onClick={() => setPage(n)}
-              className={`gallery-page-num${page === n ? ' active' : ''}`}
+              className={`galleryPageNum${page === n ? ' active' : ''}`}
             >{n}</button>
           ))}
 
           <button
             onClick={() => setPage(p => Math.min(total, p + 1))}
             disabled={page === total}
-            className="gallery-page-btn"
+            className="galleryPageBtn"
           >›</button>
         </div>
       )}

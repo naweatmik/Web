@@ -44,7 +44,7 @@ export default function Header() {
   return (
     <>
       <header
-        className="site-header"
+        className="siteHeader"
         style={{
           transform: hidden ? 'translateY(-100%)' : 'translateY(0)',
           background: scrolled ? 'linear-gradient(to bottom, rgba(0,0,0,0.88) 55%, transparent)' : 'transparent',
@@ -52,16 +52,16 @@ export default function Header() {
           WebkitBackdropFilter: scrolled ? 'blur(12px)' : 'none',
         }}
       >
-        <div className="header-inner">
-          <button className="header-logo" onClick={scrollToTop}>
+        <div className="headerInner">
+          <button className="headerLogo" onClick={scrollToTop}>
             WEB_UIUX
           </button>
 
-          <nav className="desktop-nav">
+          <nav className="desktopNav">
             {navLinks.map((link) => (
               <button
                 key={link.href}
-                className="nav-btn"
+                className="navBtn"
                 onClick={() => handleNavClick(link.href)}
               >
                 {link.label}
@@ -71,7 +71,7 @@ export default function Header() {
 
           <button
             onClick={() => setMenuOpen(!menuOpen)}
-            className="mobile-menu-btn"
+            className="mobileMenuBtn"
           >
             {menuOpen ? <X size={22} /> : <Menu size={22} />}
           </button>
@@ -85,7 +85,7 @@ export default function Header() {
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
-              className="mobile-drawer-overlay"
+              className="mobileDrawerOverlay"
               onClick={() => setMenuOpen(false)}
             />
             <motion.div
@@ -93,16 +93,16 @@ export default function Header() {
               animate={{ x: 0 }}
               exit={{ x: '100%' }}
               transition={{ type: 'tween', duration: 0.25 }}
-              className="mobile-drawer"
+              className="mobileDrawer"
             >
-              <button className="mobile-drawer-close" onClick={() => setMenuOpen(false)}>
+              <button className="mobileDrawerClose" onClick={() => setMenuOpen(false)}>
                 <X size={22} />
               </button>
-              <nav className="mobile-nav">
+              <nav className="mobileNav">
                 {navLinks.map((link) => (
                   <button
                     key={link.href}
-                    className="mobile-nav-btn"
+                    className="mobileNavBtn"
                     onClick={() => handleNavClick(link.href)}
                   >
                     {link.label}

@@ -1,15 +1,13 @@
-/* ═══════════════════════════════════════════════════════
-   HEADER
-═══════════════════════════════════════════════════════ */
+/* HEADER */
 
-.site-header {
+.siteHeader {
   position: fixed;
   top: 0; left: 0; right: 0;
   z-index: 50;
   transition: transform 0.35s ease, background 0.3s, backdrop-filter 0.3s, border-color 0.3s;
 }
 
-.header-inner {
+.headerInner {
   max-width: 1280px;
   margin: 0 auto;
   padding: 0 48px;
@@ -19,7 +17,7 @@
   justify-content: space-between;
 }
 
-.header-logo {
+.headerLogo {
   color: #fff;
   font-weight: 900;
   font-size: 15px;
@@ -31,15 +29,15 @@
   opacity: 1;
   transition: opacity 0.2s;
 }
-.header-logo:hover { opacity: 0.6; }
+.headerLogo:hover { opacity: 0.6; }
 
-.desktop-nav {
+.desktopNav {
   display: flex;
   align-items: center;
   gap: 40px;
 }
 
-.nav-btn {
+.navBtn {
   color: rgba(255,255,255,0.65);
   font-size: 13px;
   font-weight: 500;
@@ -50,18 +48,18 @@
   transition: color 0.2s;
   padding: 4px 0;
 }
-.nav-btn:hover { color: #fff; }
+.navBtn:hover { color: #fff; }
 
-.mobile-menu-btn { display: none !important; }
+.mobileMenuBtn { display: none !important; }
 
-.mobile-drawer-overlay {
+.mobileDrawerOverlay {
   position: fixed;
   inset: 0;
   background: rgba(0,0,0,0.6);
   z-index: 40;
 }
 
-.mobile-drawer {
+.mobileDrawer {
   position: fixed;
   top: 0; right: 0;
   height: 100%;
@@ -75,7 +73,7 @@
   padding-right: 36px;
 }
 
-.mobile-drawer-close {
+.mobileDrawerClose {
   position: absolute;
   top: 20px;
   right: 24px;
@@ -85,13 +83,13 @@
   cursor: pointer;
 }
 
-.mobile-nav {
+.mobileNav {
   display: flex;
   flex-direction: column;
   gap: 28px;
 }
 
-.mobile-nav-btn {
+.mobileNavBtn {
   color: #fff;
   font-size: 26px;
   font-weight: 800;
@@ -102,10 +100,10 @@
   opacity: 1;
   transition: opacity 0.2s;
 }
-.mobile-nav-btn:hover { opacity: 0.5; }
+.mobileNavBtn:hover { opacity: 0.5; }
 
 @media (max-width: 767px) {
-  .desktop-nav     { display: none !important; }
-  .mobile-menu-btn { display: block !important; }
-  .header-inner    { padding: 0 20px; }
+  .desktopNav     { display: none !important; }
+  .mobileMenuBtn { display: block !important; }
+  .headerInner    { padding: 0 20px; }
 }

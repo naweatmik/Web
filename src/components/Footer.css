@@ -1,8 +1,6 @@
-/* ═══════════════════════════════════════════════════════
-   FOOTER
-═══════════════════════════════════════════════════════ */
+/* FOOTER */
 
-.site-footer {
+.siteFooter {
   background: #000;
   color: #fff;
   width: 100%;
@@ -10,25 +8,42 @@
   padding-top: 0;
 }
 
-.footer-inner {
+.footerInner {
   padding: 40px 24px 0;
 }
 
 /* CTA 카드 */
-.footer-cta {
+.footerCta {
+  display: flex;
   flex-direction: row;
   align-items: center !important;
+  justify-content: space-between;
   gap: 16px;
   padding: 28px 24px !important;
   background: #fff;
   border-radius: 20px;
   border: 1px solid rgba(0,0,0,0.1);
-  display: flex;
-  justify-content: space-between;
   cursor: pointer;
+  position: relative;
+  overflow: hidden;
 }
 
-.footer-cta-heading {
+@keyframes ctaShimmer {
+  0%   { transform: translateX(-100%) skewX(-15deg); }
+  100% { transform: translateX(300%) skewX(-15deg); }
+}
+
+.footerCtaShimmer {
+  position: absolute;
+  top: 0; left: 0;
+  width: 40%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.55), transparent);
+  animation: ctaShimmer 4s ease-in-out infinite;
+  pointer-events: none;
+}
+
+.footerCtaHeading {
   font-family: 'Inter', 'Pretendard', sans-serif;
   font-size: clamp(1.4rem, 3vw, 2.2rem);
   font-weight: 800;
@@ -37,42 +52,42 @@
   margin: 0;
 }
 
-.footer-cta-icon {
+.footerCtaIcon {
   width: clamp(28px, 3.5vw, 44px);
   height: clamp(28px, 3.5vw, 44px);
   flex-shrink: 0;
 }
 
 /* 메인 그리드 */
-.footer-grid { grid-template-columns: 1fr; }
+.footerGrid { grid-template-columns: 1fr; }
 
-.footer-card {
+.footerCard {
   border-radius: 20px;
   padding: 28px;
 }
 
-.footer-card-min { min-height: auto !important; }
+.footerCardMin { min-height: auto !important; }
 
-.footer-card-contact {
+.footerCardContact {
   background: #2D3FE7;
   display: flex;
   flex-direction: column;
   justify-content: space-between;
 }
 
-.footer-card-heading {
+.footerCardHeading {
   font-size: 15px;
   font-weight: 700;
   margin: 0;
 }
 
-.footer-card-text {
+.footerCardText {
   font-size: 15px;
   line-height: 1.4;
   margin-bottom: 20px;
 }
 
-.footer-contact-link {
+.footerContactLink {
   display: block;
   width: 100%;
   background: #fff;
@@ -87,10 +102,23 @@
   text-align: center;
   text-decoration: none;
   box-sizing: border-box;
+  transition: background 0.2s, color 0.2s, transform 0.2s;
+}
+.footerContactLink:hover {
+  background: #f0f0f0;
+  transform: translateY(-2px);
 }
 
-.footer-card-info {
-  background: linear-gradient(135deg, #6366f1 0%, #a855f7 60%, #ec4899 100%);
+@keyframes footerGradientShift {
+  0%   { background-position: 0% 50%; }
+  50%  { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+
+.footerCardInfo {
+  background: linear-gradient(135deg, #6366f1 0%, #a855f7 30%, #ec4899 60%, #6366f1 100%);
+  background-size: 250% 250%;
+  animation: footerGradientShift 8s ease infinite;
   display: flex;
   flex-direction: column;
   justify-content: flex-end;
@@ -99,7 +127,7 @@
   overflow: hidden;
 }
 
-.footer-card-highlight {
+.footerCardHighlight {
   position: absolute;
   top: 0; left: 0; right: 0;
   height: 50%;
@@ -107,7 +135,7 @@
   pointer-events: none;
 }
 
-.footer-card-info-heading {
+.footerCardInfoHeading {
   font-size: 15px;
   font-weight: 700;
   color: rgba(255,255,255,0.6);
@@ -116,9 +144,9 @@
   position: relative;
 }
 
-.footer-address-block { position: relative; }
+.footerAddressBlock { position: relative; }
 
-.footer-address-label {
+.footerAddressLabel {
   font-size: 10px;
   color: rgba(255,255,255,0.55);
   letter-spacing: 0.18em;
@@ -127,7 +155,7 @@
   margin-bottom: 6px;
 }
 
-.footer-address-text {
+.footerAddressText {
   font-size: 14px;
   line-height: 1.5;
   margin: 0;
@@ -135,12 +163,12 @@
   font-weight: 500;
 }
 
-.footer-card-menu {
+.footerCardMenu {
   background: #1A1A1A;
   flex: 1;
 }
 
-.footer-menu-grid {
+.footerMenuGrid {
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: 12px 8px;
@@ -149,20 +177,20 @@
   letter-spacing: 0.04em;
 }
 
-.footer-menu-item {
+.footerMenuItem {
   color: rgba(255,255,255,0.7);
   cursor: pointer;
   transition: color 0.2s;
 }
-.footer-menu-item:hover { color: #fff; }
+.footerMenuItem:hover { color: #fff; }
 
-.footer-social-grid {
+.footerSocialGrid {
   display: grid;
   grid-template-columns: 1fr 1fr 1fr;
   gap: 12px;
 }
 
-.footer-copyright {
+.footerCopyright {
   font-size: 10px;
   color: rgba(255,255,255,0.3);
   letter-spacing: 0.08em;
@@ -170,13 +198,24 @@
   margin-bottom: 16px;
 }
 
-.footer-wordmark {
+.footerWordmark {
   width: 100%;
   overflow: hidden;
   line-height: 0.85;
 }
 
-.footer-wordmark-text {
+@keyframes marqueeScroll {
+  0%   { transform: translateX(0); }
+  100% { transform: translateX(-50%); }
+}
+
+.footerWordmarkTrack {
+  display: flex;
+  width: max-content;
+  animation: marqueeScroll 35s linear infinite;
+}
+
+.footerWordmarkText {
   font-family: 'Inter', 'Pretendard', sans-serif;
   font-size: 14vw;
   font-weight: 900;
@@ -186,10 +225,11 @@
   margin: 0;
   padding-left: 2vw;
   line-height: 0.9;
+  display: block;
 }
 
 /* 소셜 버튼 */
-.social-btn {
+.socialBtn {
   border-radius: 14px;
   aspect-ratio: 1;
   padding: 12px;
@@ -199,7 +239,7 @@
   text-decoration: none;
 }
 
-.social-btn-label {
+.socialBtnLabel {
   font-size: 10px;
   font-weight: 700;
   background: rgba(255,255,255,0.25);
@@ -212,7 +252,7 @@
 }
 
 @media (min-width: 768px) {
-  .footer-grid     { grid-template-columns: 5fr 4fr 4fr; }
-  .footer-cta      { flex-direction: row; align-items: center !important; gap: 0; padding: 36px 48px !important; }
-  .footer-card-min { min-height: 260px !important; }
+  .footerGrid    { grid-template-columns: 5fr 4fr 4fr; }
+  .footerCta     { gap: 0; padding: 36px 48px !important; }
+  .footerCardMin { min-height: 260px !important; }
 }

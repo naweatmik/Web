@@ -1,6 +1,4 @@
-/* ═══════════════════════════════════════════════════════
-   FOIL ANIMATIONS
-═══════════════════════════════════════════════════════ */
+/* FOIL ANIMATIONS */
 
 @keyframes foil-gradient-shift {
   0%   { background-position: 0%   30%; }
@@ -23,7 +21,7 @@
   100% { opacity: 0.42; transform: translate(0%, 0%);   }
 }
 
-.foil-gradient-layer {
+.foilGradientLayer {
   background: linear-gradient(
     148deg,
     #2340d6  0%,
@@ -40,42 +38,40 @@
   animation: foil-gradient-shift 7s ease-in-out infinite;
 }
 
-.foil-highlight-1 {
+.foilHighlight1 {
   position: absolute; inset: 0;
   background: radial-gradient(ellipse 55% 38% at 32% 22%, rgba(255,255,255,0.52) 0%, transparent 68%);
   animation: highlight-drift 5s ease-in-out infinite;
   mix-blend-mode: overlay;
 }
 
-.foil-highlight-2 {
+.foilHighlight2 {
   position: absolute; inset: 0;
   background: radial-gradient(ellipse 35% 45% at 72% 68%, rgba(200,240,255,0.3) 0%, transparent 65%);
   animation: highlight-drift 7s ease-in-out infinite reverse;
   mix-blend-mode: screen;
 }
 
-.foil-wrap {
+.foilWrap {
   animation: foil-float 6s ease-in-out infinite;
 }
 
-/* ═══════════════════════════════════════════════════════
-   HERO LAYOUT
-═══════════════════════════════════════════════════════ */
+/* HERO LAYOUT */
 
-.hero-wrapper {
+.heroWrapper {
   height: 350vh;
   position: relative;
   z-index: 1;
 }
 
-.hero-sticky {
+.heroSticky {
   position: sticky;
   top: 0;
   height: 100vh;
   background: #000000;
 }
 
-.hero-svg {
+.heroSvg {
   position: absolute;
   inset: 0;
   width: 100%;
@@ -84,21 +80,21 @@
   z-index: 0;
 }
 
-.hero-mask-layer {
+.heroMaskLayer {
   position: absolute;
   inset: 0;
   z-index: 4;
   pointer-events: none;
 }
 
-.hero-mask-center {
+.heroMaskCenter {
   position: absolute;
   left: 50%;
   top: 50%;
   transform: translate(-50%, -50%);
 }
 
-.hero-kv-blurred {
+.heroKvBlurred {
   width: 100%;
   height: auto;
   display: block;
@@ -106,14 +102,14 @@
   filter: blur(18px) brightness(1.4) saturate(1.8);
 }
 
-.hero-kv-original {
+.heroKvOriginal {
   width: 100%;
   height: auto;
   display: block;
   border-radius: 8px;
 }
 
-.hero-text-layer {
+.heroTextLayer {
   position: absolute;
   inset: 0;
   display: flex;
@@ -124,7 +120,7 @@
   z-index: 3;
 }
 
-.hero-kv-original-wrap {
+.heroKvOriginalWrap {
   position: absolute;
   left: 50%;
   top: 50%;
@@ -133,11 +129,9 @@
   pointer-events: none;
 }
 
-/* ═══════════════════════════════════════════════════════
-   HERO TEXT
-═══════════════════════════════════════════════════════ */
+/* HERO TEXT */
 
-.hero-text {
+.heroText {
   font-family: 'Inter', 'Pretendard', sans-serif;
   font-size: 12vw;
   font-weight: 900;
@@ -148,15 +142,15 @@
 }
 
 /* SVG 마스크 텍스트 행 오프셋 — font-size × line-height */
-.hero-svg-line-top    { transform: translateY(-10.8vw); }
-.hero-svg-line-bottom { transform: translateY(10.8vw);  }
+.heroSvgLineTop    { transform: translateY(-10.8vw); }
+.heroSvgLineBottom { transform: translateY(10.8vw);  }
 
-.hero-img-wrap {
+.heroImgWrap {
   width: clamp(260px, 42vw, 600px);
 }
 
 /* iOS HIG — frosted glass panel */
-.hero-glass-panel {
+.heroGlassPanel {
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -172,9 +166,9 @@
 }
 
 @media (max-width: 767px) {
-  .hero-wrapper         { height: 200vh; }
-  .hero-text            { font-size: 16vw; }
-  .hero-svg-line-top    { transform: translateY(-14.4vw); }
-  .hero-svg-line-bottom { transform: translateY(14.4vw);  }
-  .hero-img-wrap        { width: 72vw; }
+  .heroWrapper         { height: 200vh; }
+  .heroText            { font-size: 16vw; }
+  .heroSvgLineTop    { transform: translateY(-14.4vw); }
+  .heroSvgLineBottom { transform: translateY(14.4vw);  }
+  .heroImgWrap        { width: 72vw; }
 }

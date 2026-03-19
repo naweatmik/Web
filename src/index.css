@@ -40,8 +40,7 @@
   font-display: swap;
 }
 
-/* ═══════════════════════════════════════════════════════
-   TYPOGRAPHY SYSTEM — Perfect Fourth (1.333) Modular Scale
+/* TYPOGRAPHY SYSTEM — Perfect Fourth (1.333) Modular Scale
    참고: typescale.com · Apple HIG · Toss Design System
 
    Scale (base 16px × 1.333):
@@ -68,8 +67,7 @@
    heading  : -0.025em ~ -0.03em
    subhead  : -0.015em
    body     : 0em
-   label    : +0.12em ~ +0.15em (uppercase)
-═══════════════════════════════════════════════════════ */
+   label    : +0.12em ~ +0.15em (uppercase) */
 
 :root {
   --t-xs:   12px;
@@ -129,9 +127,7 @@ body {
 ::-webkit-scrollbar-thumb { background: #2a2a2a; border-radius: 4px; }
 ::selection               { background: #3B82F6; color: #fff; }
 
-/* ═══════════════════════════════════════════════════════
-   TYPOGRAPHY CLASSES
-═══════════════════════════════════════════════════════ */
+/* TYPOGRAPHY CLASSES */
 
 .typo-label {
   font-size: var(--t-xs);
@@ -182,9 +178,7 @@ body {
   margin-bottom: 6px;
 }
 
-/* ═══════════════════════════════════════════════════════
-   LAYOUT
-═══════════════════════════════════════════════════════ */
+/* LAYOUT */
 
 .container {
   max-width: 1280px;

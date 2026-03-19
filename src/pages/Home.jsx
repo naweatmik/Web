@@ -11,6 +11,11 @@ import Footer from '../components/Footer'
 import CurriculumFlow from '../components/CurriculumFlow'
 import Gallery from '../components/Gallery'
 import { instructor as defaultInstructor, instructor2 as defaultInstructor2, aboutCourse } from '../data/content'
+import InstructorModel, { MALE_URL, FEMALE_URL } from '../components/InstructorModel'
+
+// GLB 파일 교체: public 폴더에 파일 넣고 아래 경로 수정
+// const MALE_URL   = '/models/instructor_male.glb'
+// const FEMALE_URL = '/models/instructor_female.glb'
 import { supabase, isSupabaseReady } from '../lib/supabase'
 
 const inView = {
@@ -63,35 +68,35 @@ export default function Home() {
   }, [])
 
   return (
-    <div className="page-bg">
+    <div className="pageBg">
       <Header />
 
       {/* HERO */}
       <Hero />
 
       {/* ABOUT */}
-      <section ref={aboutRef} id="about" className="about-section">
-        <div className="about-bg">
-          <div className="about-orb-right" />
-          <div className="about-orb-left" />
+      <section ref={aboutRef} id="about" className="aboutSection">
+        <div className="aboutBg">
+          <div className="aboutOrbRight" />
+          <div className="aboutOrbLeft" />
         </div>
 
         <div className="container" style={{ position: 'relative', zIndex: 1 }}>
           <motion.p
             variants={fadeUp(0)} initial="hidden" whileInView="visible" viewport={{ once: true, amount: 0 }}
-            className="about-label"
+            className="aboutLabel"
           >
             {aboutCourse.label}
           </motion.p>
           <motion.h2
             variants={fadeUp(0.06)} initial="hidden" whileInView="visible" viewport={{ once: true, amount: 0 }}
-            className="about-h2"
+            className="aboutH2"
           >
             학과소개
           </motion.h2>
 
           {/* 에디토리얼 카드 목록 */}
-          <div className="about-divider">
+          <div className="aboutDivider">
             {aboutSections.map((card, idx) => {
               const accent       = idx === 0 ? '#60a5fa' : '#a78bfa'
               const accentBg     = idx === 0 ? 'rgba(96,165,250,0.1)' : 'rgba(167,139,250,0.1)'
@@ -104,14 +109,14 @@ export default function Home() {
                   initial="hidden"
                   whileInView="visible"
                   viewport={{ once: true, amount: 0 }}
-                  className="about-card"
+                  className="aboutCard"
                 >
                   {/* 번호 + 태그 */}
-                  <div className="about-card-meta">
-                    <span className="about-card-num">0{idx + 1}</span>
-                    <div className="about-card-divider-line" />
+                  <div className="aboutCardMeta">
+                    <span className="aboutCardNum">0{idx + 1}</span>
+                    <div className="aboutCardDividerLine" />
                     <span
-                      className="about-card-tag"
+                      className="aboutCardTag"
                       style={{ color: accent, background: accentBg, border: `1px solid ${accentBorder}` }}
                     >
                       {tagLabel}
@@ -119,11 +124,11 @@ export default function Home() {
                   </div>
 
                   {/* 제목 + 본문 2컬럼 */}
-                  <div className="about-editorial-row">
-                    <h3 className="about-card-title">{card.title}</h3>
-                    <div className="about-card-body">
+                  <div className="aboutEditorialRow">
+                    <h3 className="aboutCardTitle">{card.title}</h3>
+                    <div className="aboutCardBody">
                       {card.body.split('\n\n').map((para, i) => (
-                        <p key={i} className="about-card-p">{para}</p>
+                        <p key={i} className="aboutCardP">{para}</p>
                       ))}
                     </div>
                   </div>
@@ -138,48 +143,48 @@ export default function Home() {
             initial="hidden"
             whileInView="visible"
             viewport={{ once: true, amount: 0 }}
-            className="about-comp"
+            className="aboutComp"
           >
-            <div className="about-comp-header">
-              <span className="about-comp-num">03</span>
-              <div className="about-card-divider-line" />
-              <h3 className="about-comp-h3">{compMeta.title}</h3>
-              <span className="about-comp-subtitle">{compMeta.subtitle}</span>
+            <div className="aboutCompHeader">
+              <span className="aboutCompNum">03</span>
+              <div className="aboutCardDividerLine" />
+              <h3 className="aboutCompH3">{compMeta.title}</h3>
+              <span className="aboutCompSubtitle">{compMeta.subtitle}</span>
             </div>
 
-            <div className="about-comp-panels">
+            <div className="aboutCompPanels">
               {/* 웹디자인 패널 */}
-              <div className="comp-panel comp-panel-web">
-                <div className="comp-panel-header">
-                  <span className="comp-panel-dot" />
-                  <span className="comp-panel-label">웹디자인</span>
+              <div className="compPanel compPanelWeb">
+                <div className="compPanelHeader">
+                  <span className="compPanelDot" />
+                  <span className="compPanelLabel">웹디자인</span>
                 </div>
                 {compRows.map((row, i) => (
                   <div
                     key={i}
-                    className="comp-panel-row"
+                    className="compPanelRow"
                     style={{ borderBottom: i < compRows.length - 1 ? '1px solid rgba(255,255,255,0.05)' : 'none' }}
                   >
-                    <span className="comp-panel-aspect">{row.aspect}</span>
-                    <span className="comp-panel-value">{row.web}</span>
+                    <span className="compPanelAspect">{row.aspect}</span>
+                    <span className="compPanelValue">{row.web}</span>
                   </div>
                 ))}
               </div>
 
               {/* 편집디자인 패널 */}
-              <div className="comp-panel comp-panel-print">
-                <div className="comp-panel-header">
-                  <span className="comp-panel-dot" />
-                  <span className="comp-panel-label">편집디자인</span>
+              <div className="compPanel compPanelPrint">
+                <div className="compPanelHeader">
+                  <span className="compPanelDot" />
+                  <span className="compPanelLabel">편집디자인</span>
                 </div>
                 {compRows.map((row, i) => (
                   <div
                     key={i}
-                    className="comp-panel-row"
+                    className="compPanelRow"
                     style={{ borderBottom: i < compRows.length - 1 ? '1px solid rgba(255,255,255,0.05)' : 'none' }}
                   >
-                    <span className="comp-panel-aspect">{row.aspect}</span>
-                    <span className="comp-panel-value">{row.print}</span>
+                    <span className="compPanelAspect">{row.aspect}</span>
+                    <span className="compPanelValue">{row.print}</span>
                   </div>
                 ))}
               </div>
@@ -189,21 +194,21 @@ export default function Home() {
       </section>
 
       {/* 컬러 오브 구분선 */}
-      <div className="orb-divider">
-        <div className="orb-divider-1" />
-        <div className="orb-divider-2" />
-        <div className="orb-divider-3" />
+      <div className="orbDivider">
+        <div className="orbDivider1" />
+        <div className="orbDivider2" />
+        <div className="orbDivider3" />
       </div>
 
       {/* CURRICULUM */}
-      <section id="curriculum" className="curriculum-section">
-        <div className="curriculum-section-bg">
-          <div className="cs-orb-1" />
-          <div className="cs-orb-2" />
-          <div className="cs-orb-3" />
-          <div className="cs-orb-4" />
-          <div className="cs-orb-5" />
-          <div className="cs-top-line" />
+      <section id="curriculum" className="curriculumSection">
+        <div className="curriculumSectionBg">
+          <div className="csOrb1" />
+          <div className="csOrb2" />
+          <div className="csOrb3" />
+          <div className="csOrb4" />
+          <div className="csOrb5" />
+          <div className="csTopLine" />
         </div>
         <div className="container" style={{ maxWidth: 'none' }}>
           <CurriculumFlow />
@@ -211,7 +216,7 @@ export default function Home() {
       </section>
 
       {/* INSTRUCTOR */}
-      <section id="instructor" className="instructor-section">
+      <section id="instructor" className="instructorSection">
         <InstructorCanvas />
         <div className="container" style={{ position: 'relative', zIndex: 1 }}>
           <motion.div
@@ -219,51 +224,33 @@ export default function Home() {
             initial="hidden"
             whileInView="visible"
             viewport={{ once: true, margin: '-60px' }}
-            className="instructor-header"
+            className="instructorHeader"
           >
-            <p className="instructor-label">Instructors</p>
-            <h2 className="instructor-h2">강사 소개</h2>
+            <p className="instructorLabel">Instructors</p>
+            <h2 className="instructorH2">강사 소개</h2>
           </motion.div>
 
-          <div className="instructor-cards-grid">
+          <div className="instructorGrid">
             {instructors.map((person, idx) => (
               <motion.div
                 key={person.name}
-                variants={fadeUp(idx * 0.12)}
+                variants={fadeUp(idx * 0.1)}
                 initial="hidden"
                 whileInView="visible"
                 viewport={{ once: true, margin: '-60px' }}
-                className="instructor-card"
-                style={{
-                  background: idx === 0
-                    ? 'linear-gradient(160deg, #1a0545 0%, #0d1a4f 60%, #0a0a1a 100%)'
-                    : 'linear-gradient(160deg, #0a1a3f 0%, #1a053a 60%, #0a0a1a 100%)',
-                }}
+                className="instructorCard3d"
               >
-                <div className="instructor-card-orb-wrap">
-                  <div
-                    className="instructor-card-orb instructor-card-orb-top"
-                    style={{
-                      background: idx === 0
-                        ? 'radial-gradient(circle, rgba(147,51,234,0.55) 0%, transparent 65%)'
-                        : 'radial-gradient(circle, rgba(79,70,229,0.55) 0%, transparent 65%)',
-                    }}
-                  />
-                  <div
-                    className="instructor-card-orb instructor-card-orb-bottom"
-                    style={{
-                      background: idx === 0
-                        ? 'radial-gradient(circle, rgba(79,70,229,0.4) 0%, transparent 65%)'
-                        : 'radial-gradient(circle, rgba(219,39,119,0.35) 0%, transparent 65%)',
-                    }}
-                  />
+                <span className="instructorCard3dNum">0{idx + 1}</span>
+                <div className="instructorCard3dModel">
+                  <InstructorModel
+                  modelUrl={idx === 0 ? MALE_URL : FEMALE_URL}
+                  accent={idx === 0 ? '#9333ea' : '#ec4899'}
+                  baseRotation={idx === 0 ? Math.PI : 0}
+                />
                 </div>
-
-                <img src={person.photo} alt={person.name} className="instructor-card-img" />
-
-                <div className="instructor-card-info">
-                  <h3 className="instructor-card-name">{person.name}</h3>
-                  <p className="instructor-card-role">{person.title}</p>
+                <div className="instructorCard3dInfo">
+                  <h3 className="instructorCard3dName">{person.name}</h3>
+                  <p className="instructorCard3dRole">{person.title}</p>
                 </div>
               </motion.div>
             ))}
@@ -272,17 +259,17 @@ export default function Home() {
       </section>
 
       {/* WORKS */}
-      <section id="works" className="works-section">
-        <div className="container works-header">
+      <section id="works" className="worksSection">
+        <div className="container worksHeader">
           <motion.div
             variants={inView}
             initial="hidden"
             whileInView="visible"
             viewport={{ once: true, margin: '-60px' }}
           >
-            <p className="works-label">Student Works</p>
-            <h2 className="works-h2">Portfolio</h2>
-            <p className="works-desc">수강생들이 직접 만든 포트폴리오 작업물입니다</p>
+            <p className="worksLabel">Student Works</p>
+            <h2 className="worksH2">Portfolio</h2>
+            <p className="worksDesc">수강생들이 직접 만든 포트폴리오 작업물입니다</p>
           </motion.div>
         </div>
         <Gallery />
@@ -435,5 +422,5 @@ function InstructorCanvas() {
     }
   }, [])
 
-  return <canvas ref={canvasRef} className="instructor-canvas" />
+  return <canvas ref={canvasRef} className="instructorCanvas" />
 }

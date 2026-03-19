@@ -1,12 +1,10 @@
-/* ═══════════════════════════════════════════════════════
-   CURRICULUM FLOW
-═══════════════════════════════════════════════════════ */
+/* CURRICULUM FLOW */
 
-.curriculum-root { position: relative; z-index: 1; }
+.curriculumRoot { position: relative; z-index: 1; }
 
-.curriculum-header { margin-bottom: clamp(48px, 8vw, 96px); }
+.curriculumHeader { margin-bottom: clamp(48px, 8vw, 96px); }
 
-.curriculum-label {
+.curriculumLabel {
   font-size: 11px;
   font-weight: 600;
   letter-spacing: 0.28em;
@@ -16,14 +14,14 @@
   margin: 0 0 16px;
 }
 
-.curriculum-title-row {
+.curriculumTitleRow {
   display: flex;
   align-items: baseline;
   gap: 14px;
   flex-wrap: wrap;
 }
 
-.curriculum-h2 {
+.curriculumH2 {
   font-family: 'Inter', 'Pretendard', sans-serif;
   font-size: clamp(2.4rem, 5vw, 6rem);
   font-weight: 900;
@@ -33,7 +31,7 @@
   margin: 0;
 }
 
-.curriculum-subtitle-text {
+.curriculumSubtitleText {
   font-family: 'Inter', 'Pretendard', sans-serif;
   font-size: clamp(1rem, 2vw, 1.5rem);
   font-weight: 300;
@@ -41,13 +39,13 @@
   letter-spacing: -0.01em;
 }
 
-.curriculum-groups {
+.curriculumGroups {
   display: flex;
   flex-direction: column;
   gap: clamp(36px, 6vw, 56px);
 }
 
-.curriculum-group-label-row {
+.curriculumGroupLabelRow {
   display: flex;
   align-items: center;
   gap: 8px;
@@ -55,7 +53,7 @@
   padding-left: 4px;
 }
 
-.curriculum-group-dot {
+.curriculumGroupDot {
   width: 6px;
   height: 6px;
   border-radius: 50%;
@@ -63,7 +61,7 @@
   display: inline-block;
 }
 
-.curriculum-group-name {
+.curriculumGroupName {
   font-size: 10px;
   font-weight: 700;
   text-transform: uppercase;
@@ -71,9 +69,9 @@
   font-family: 'Inter', sans-serif;
 }
 
-.curriculum-cards { display: flex; flex-direction: column; gap: 6px; }
+.curriculumCards { display: flex; flex-direction: column; gap: 6px; }
 
-.curriculum-card {
+.curriculumCard {
   position: relative;
   display: flex;
   align-items: center;
@@ -93,7 +91,7 @@
     inset -1px 0 0 rgba(255,255,255,0.05);
 }
 
-.curriculum-card-shine {
+.curriculumCardShine {
   position: absolute;
   inset: 0;
   border-radius: 16px;
@@ -101,7 +99,7 @@
   pointer-events: none;
 }
 
-.curriculum-card-top-line {
+.curriculumCardTopLine {
   position: absolute;
   top: 0; left: 0; right: 0;
   height: 1px;
@@ -110,7 +108,7 @@
   pointer-events: none;
 }
 
-.curriculum-card-accent {
+.curriculumCardAccent {
   position: absolute;
   left: 0;
   top: 12px;
@@ -120,7 +118,7 @@
   opacity: 0.7;
 }
 
-.curriculum-step-num {
+.curriculumStepNum {
   position: absolute;
   left: clamp(12px, 2vw, 20px);
   font-family: 'Inter', sans-serif;
@@ -130,7 +128,7 @@
   color: rgba(255,255,255,0.22);
 }
 
-.curriculum-title {
+.curriculumTitle {
   flex: 1;
   min-width: 0;
   font-family: 'Inter', 'Pretendard', sans-serif;
@@ -142,7 +140,7 @@
   word-break: keep-all;
 }
 
-.curriculum-en {
+.curriculumEn {
   display: none;
   font-family: 'Inter', sans-serif;
   font-size: clamp(11px, 1vw, 13px);
@@ -153,7 +151,7 @@
   white-space: nowrap;
 }
 
-.curriculum-tag {
+.curriculumTag {
   font-size: 10px;
   font-weight: 700;
   letter-spacing: 0.1em;
@@ -165,10 +163,9 @@
   flex-shrink: 0;
 }
 
-/* 가로 스크롤 (레거시) */
-.curriculum-scroll-wrapper { display: none; }
+.curriculumScrollWrapper { display: none; }
 
-.curriculum-scroll-inner {
+.curriculumScrollInner {
   display: flex;
   align-items: flex-start;
   gap: 10px;
@@ -177,22 +174,22 @@
   scrollbar-width: thin;
   scrollbar-color: #2a2a2a transparent;
 }
-.curriculum-scroll-inner::-webkit-scrollbar       { height: 3px; }
-.curriculum-scroll-inner::-webkit-scrollbar-thumb { background: #2a2a2a; border-radius: 4px; }
+.curriculumScrollInner::-webkit-scrollbar       { height: 3px; }
+.curriculumScrollInner::-webkit-scrollbar-thumb { background: #2a2a2a; border-radius: 4px; }
 
-.curriculum-mobile {
+.curriculumMobile {
   display: flex;
   flex-direction: column;
   gap: 10px;
 }
 
 @media (min-width: 768px) {
-  .curriculum-scroll-wrapper { display: block; }
-  .curriculum-mobile          { display: none; }
+  .curriculumScrollWrapper { display: block; }
+  .curriculumMobile          { display: none; }
 }
 
 @media (max-width: 575px) {
-  #curriculum .curriculum-title    { font-size: 0.85rem !important; }
-  #curriculum .curriculum-step-num { font-size: 0.75rem !important; width: 18px !important; }
-  #curriculum .curriculum-tag      { font-size: 8px !important; padding: 3px 7px !important; }
+  #curriculum .curriculumTitle    { font-size: 0.85rem !important; }
+  #curriculum .curriculumStepNum { font-size: 0.75rem !important; width: 18px !important; }
+  #curriculum .curriculumTag      { font-size: 8px !important; padding: 3px 7px !important; }
 }

@@ -1,85 +1,115 @@
 import './Footer.css'
 import { ArrowUpRight } from 'lucide-react'
+import { motion } from 'framer-motion'
+import { useState } from 'react'
+
+const sway = (from, to, duration = 7, delay = 0) => ({
+  animate: { rotate: [from, to, from] },
+  style: { transformOrigin: 'bottom center' },
+  transition: { duration, delay, repeat: Infinity, ease: 'easeInOut' },
+})
 
 export default function Footer() {
+  const [ctaHover, setCtaHover] = useState(false)
+
   return (
-    <footer className="site-footer">
-      <div className="footer-inner">
+    <footer className="siteFooter">
+      <div className="footerInner">
 
-        {/* 상단 CTA 카드 */}
-        <div className="footer-cta" style={{ marginBottom: '16px', cursor: 'pointer' }}>
-          <h2 className="footer-cta-heading">수강이 궁금하신가요?</h2>
-          <ArrowUpRight color="#0A0A0A" strokeWidth={1.8} className="footer-cta-icon" />
-        </div>
+        <motion.div
+          className="footerCta"
+          style={{ marginBottom: '16px', cursor: 'pointer' }}
+          whileHover={{ scale: 1.015, boxShadow: '0 16px 56px rgba(0,0,0,0.14)' }}
+          transition={{ duration: 0.28, ease: [0.22, 1, 0.36, 1] }}
+          onHoverStart={() => setCtaHover(true)}
+          onHoverEnd={() => setCtaHover(false)}
+        >
+          <div className="footerCtaShimmer" />
+          <h2 className="footerCtaHeading">수강이 궁금하신가요?</h2>
+          <motion.div
+            animate={ctaHover ? { x: 5, y: -5 } : { x: 0, y: 0 }}
+            transition={{ duration: 0.28, ease: [0.22, 1, 0.36, 1] }}
+          >
+            <ArrowUpRight color="#0A0A0A" strokeWidth={1.8} className="footerCtaIcon" />
+          </motion.div>
+        </motion.div>
 
-        {/* 메인 그리드 */}
-        <div className="footer-grid" style={{ display: 'grid', gap: '12px', marginBottom: '16px' }}>
+        <div className="footerGrid" style={{ display: 'grid', gap: '12px', marginBottom: '16px' }}>
 
-          {/* Contact (Blue) */}
-          <div className="footer-card footer-card-contact footer-card-min">
-            <h3 className="footer-card-heading">Contact</h3>
+          <motion.div className="footerCard footerCardContact footerCardMin" {...sway(-1.2, 1.2, 7, 0)}>
+            <h3 className="footerCardHeading">Contact</h3>
             <div>
-              <p className="footer-card-text">WEB_UIUX와 함께 하시겠어요?</p>
+              <p className="footerCardText">WEB_UIUX와 함께 하시겠어요?</p>
               <a
                 href="https://daegu.sbsart.com/"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="footer-contact-link"
+                className="footerContactLink"
               >
                 수강 문의
               </a>
             </div>
-          </div>
+          </motion.div>
 
-          {/* Info (Gradient) */}
-          <div className="footer-card footer-card-info footer-card-min">
-            <div className="footer-card-highlight" />
-            <h3 className="footer-card-info-heading">Info</h3>
-            <div className="footer-address-block">
-              <span className="footer-address-label">Address</span>
-              <p className="footer-address-text">대구광역시 중구 동성로3가 동성로1길 15 5층</p>
+          <motion.div className="footerCard footerCardInfo footerCardMin" {...sway(1.0, -1.0, 8, 1.2)}>
+            <div className="footerCardHighlight" />
+            <h3 className="footerCardInfoHeading">Info</h3>
+            <div className="footerAddressBlock">
+              <span className="footerAddressLabel">Address</span>
+              <p className="footerAddressText">대구광역시 중구 동성로3가 동성로1길 15 5층</p>
             </div>
-          </div>
+          </motion.div>
 
-          {/* 메뉴 + 소셜 */}
           <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
-            <div className="footer-card footer-card-menu">
-              <div className="footer-menu-grid">
+            <motion.div className="footerCard footerCardMenu" {...sway(-0.8, 0.8, 6, 0.5)}>
+              <div className="footerMenuGrid">
                 {['HOME', 'CURRICULUM', 'INSTRUCTOR', 'WORKS'].map((item) => (
-                  <span key={item} className="footer-menu-item">{item}</span>
+                  <span key={item} className="footerMenuItem">{item}</span>
                 ))}
               </div>
-            </div>
+            </motion.div>
 
-            <div className="footer-social-grid">
-              <SocialButton label="YouTube" bg="#CD201F" />
-              <SocialButton label="Instagram" bg="linear-gradient(135deg, #f9ce34, #ee2a7b, #6228d7)" />
-              <SocialButton label="KakaoTalk" bg="#FEE500" labelColor="#000" />
+            <div className="footerSocialGrid">
+              <SocialButton label="YouTube"   bg="linear-gradient(135deg, #FF0000 0%, #CC0000 60%, #8B0000 100%)"  delay={0}   />
+              <SocialButton label="Instagram" bg="linear-gradient(135deg, #405DE6 0%, #C13584 40%, #E1306C 65%, #F77737 85%, #FFDC80 100%)" delay={0.4} />
+              <SocialButton label="KakaoTalk" bg="linear-gradient(135deg, #FEE500 0%, #F5D100 50%, #E6C200 100%)"  labelColor="#000" delay={0.8} />
             </div>
           </div>
 
         </div>
 
-        {/* 카피라이트 */}
-        <p className="footer-copyright">© SBS UIUX. ALL RIGHTS RESERVED.</p>
+        <p className="footerCopyright">© SBS UIUX. ALL RIGHTS RESERVED.</p>
 
       </div>
 
-      {/* 하단 대형 텍스트 */}
-      <div className="footer-wordmark">
-        <h1 className="footer-wordmark-text">Let's Get Connected</h1>
+      <div className="footerWordmark">
+        <div className="footerWordmarkTrack">
+          {[0, 1].map(i => (
+            <span key={i} className="footerWordmarkText" aria-hidden={i === 1}>
+              Let's Get Connected&nbsp;&nbsp;&nbsp;
+            </span>
+          ))}
+        </div>
       </div>
 
     </footer>
   )
 }
 
-function SocialButton({ label, bg, labelColor = '#fff' }) {
+function SocialButton({ label, bg, labelColor = '#fff', delay = 0 }) {
   return (
-    <a href="#" onClick={e => e.preventDefault()} className="social-btn" style={{ background: bg }}>
-      <span className="social-btn-label" style={{ color: labelColor }}>
+    <motion.a
+      href="#"
+      onClick={e => e.preventDefault()}
+      className="socialBtn"
+      style={{ background: bg, transformOrigin: 'bottom center' }}
+      animate={{ rotate: [delay % 2 === 0 ? -2 : 2, delay % 2 === 0 ? 2 : -2, delay % 2 === 0 ? -2 : 2] }}
+      transition={{ duration: 5 + delay, delay, repeat: Infinity, ease: 'easeInOut' }}
+      whileHover={{ scale: 1.07, transition: { duration: 0.22 } }}
+    >
+      <span className="socialBtnLabel" style={{ color: labelColor }}>
         {label} <ArrowUpRight size={9} />
       </span>
-    </a>
+    </motion.a>
   )
 }

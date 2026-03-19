@@ -1,29 +1,37 @@
-/* ═══════════════════════════════════════════════════════
-   GALLERY GRID
-═══════════════════════════════════════════════════════ */
+/* GALLERY GRID */
 
-.gallery-tilt-grid {
+/* 6컬럼 2+3 교대 레이아웃
+   Row A: wide(span 3, 16/9) × 2
+   Row B: std (span 2, 4/3)  × 3
+   5카드 주기 */
+.galleryTiltGrid {
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 40px;
-  padding: 0 80px;
+  grid-template-columns: repeat(6, 1fr);
+  gap: 20px;
+  padding: 0 clamp(24px, 5vw, 80px);
 }
+
+.galleryTiltGrid > *:nth-child(5n+1),
+.galleryTiltGrid > *:nth-child(5n+2) { grid-column: span 3; }
+
+.galleryTiltGrid > *:nth-child(5n+3),
+.galleryTiltGrid > *:nth-child(5n+4),
+.galleryTiltGrid > *:nth-child(5n+0) { grid-column: span 2; }
 
 @media (max-width: 1024px) {
-  .gallery-tilt-grid { grid-template-columns: repeat(3, 1fr); gap: 28px; padding: 0 40px; }
+  .galleryTiltGrid { gap: 14px; }
 }
 @media (max-width: 767px) {
-  .gallery-tilt-grid { grid-template-columns: repeat(2, 1fr); gap: 16px; padding: 0 24px; }
+  .galleryTiltGrid { grid-template-columns: repeat(2, 1fr); gap: 12px; }
+  .galleryTiltGrid > * { grid-column: span 1 !important; }
 }
 @media (max-width: 420px) {
-  .gallery-tilt-grid { grid-template-columns: 1fr; gap: 20px; padding: 0 20px; }
+  .galleryTiltGrid { grid-template-columns: 1fr; gap: 14px; }
 }
 
-/* ═══════════════════════════════════════════════════════
-   FILTER TABS
-═══════════════════════════════════════════════════════ */
+/* FILTER TABS */
 
-.filter-tabs-wrap {
+.filterTabsWrap {
   display: flex;
   justify-content: center;
   margin-bottom: clamp(40px, 6vw, 72px);
@@ -31,7 +39,7 @@
   z-index: 1;
 }
 
-.filter-tabs-inner {
+.filterTabsInner {
   position: relative;
   display: flex;
   gap: 4px;
@@ -50,7 +58,7 @@
   overflow: hidden;
 }
 
-.filter-tabs-shimmer {
+.filterTabsShimmer {
   position: absolute;
   inset: 0;
   border-radius: 100px;
@@ -58,7 +66,7 @@
   pointer-events: none;
 }
 
-.filter-tabs-top-border {
+.filterTabsTopBorder {
   position: absolute;
   top: 0; left: 0; right: 0;
   height: 1px;
@@ -66,7 +74,7 @@
   pointer-events: none;
 }
 
-.filter-btn {
+.filterBtn {
   position: relative;
   padding: clamp(7px, 1vw, 10px) clamp(14px, 2vw, 24px);
   border-radius: 100px;
@@ -82,7 +90,7 @@
   z-index: 1;
 }
 
-.filter-btn-pill {
+.filterBtnPill {
   position: absolute;
   inset: 0;
   background: #ffffff;
@@ -91,11 +99,9 @@
   box-shadow: 0 2px 12px rgba(255,255,255,0.25);
 }
 
-/* ═══════════════════════════════════════════════════════
-   GALLERY CARD
-═══════════════════════════════════════════════════════ */
+/* GALLERY CARD */
 
-.gallery-card-num {
+.galleryCardNum {
   position: absolute;
   top: 20px;
   left: 20px;
@@ -106,24 +112,24 @@
   color: rgba(255,255,255,0.45);
 }
 
-.gallery-card-badge {
+.galleryCardBadge {
   position: absolute;
-  top: 18px;
-  right: 18px;
-  font-size: 9px;
+  top: 14px;
+  right: 14px;
+  font-size: 10px;
   font-weight: 700;
-  letter-spacing: 0.14em;
+  letter-spacing: 0.1em;
   text-transform: uppercase;
-  color: rgba(255,255,255,0.7);
-  background: rgba(255,255,255,0.12);
+  color: #fff;
   backdrop-filter: blur(8px);
-  padding: 4px 10px;
+  padding: 5px 12px;
   border-radius: 100px;
   font-family: 'Inter', sans-serif;
-  border: 1px solid rgba(255,255,255,0.15);
+  border: 1px solid transparent;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.3);
 }
 
-.gallery-card-title {
+.galleryCardTitle {
   position: absolute;
   bottom: 22px;
   left: 20px;
@@ -136,14 +142,14 @@
   color: #ffffff;
 }
 
-.gallery-skeleton {
+.gallerySkeleton {
   aspect-ratio: 4/3;
   border-radius: 12px;
   background: rgba(255,255,255,0.04);
   animation: gallery-pulse 2s ease-in-out infinite;
 }
 
-.gallery-empty {
+.galleryEmpty {
   text-align: center;
   padding: 80px 24px;
   color: rgba(255,255,255,0.25);
@@ -151,11 +157,9 @@
   font-size: 14px;
 }
 
-/* ═══════════════════════════════════════════════════════
-   PAGINATION
-═══════════════════════════════════════════════════════ */
+/* PAGINATION */
 
-.gallery-pagination {
+.galleryPagination {
   display: flex;
   justify-content: center;
   align-items: center;
@@ -164,7 +168,7 @@
   padding-bottom: 20px;
 }
 
-.gallery-page-btn {
+.galleryPageBtn {
   width: 40px;
   height: 40px;
   border-radius: 50%;
@@ -177,10 +181,10 @@
   justify-content: center;
   transition: color 0.2s;
 }
-.gallery-page-btn:disabled      { color: rgba(255,255,255,0.2); cursor: default; }
-.gallery-page-btn:not(:disabled){ color: rgba(255,255,255,0.7); }
+.galleryPageBtn:disabled      { color: rgba(255,255,255,0.2); cursor: default; }
+.galleryPageBtn:not(:disabled){ color: rgba(255,255,255,0.7); }
 
-.gallery-page-num {
+.galleryPageNum {
   width: 40px;
   height: 40px;
   border-radius: 50%;
@@ -196,15 +200,13 @@
   background: none;
   color: rgba(255,255,255,0.5);
 }
-.gallery-page-num.active {
+.galleryPageNum.active {
   border-color: rgba(255,255,255,0.8);
   background: #ffffff;
   color: #0a0a0a;
 }
 
-/* ═══════════════════════════════════════════════════════
-   LIGHTBOX
-═══════════════════════════════════════════════════════ */
+/* LIGHTBOX */
 
 .lightbox {
   position: fixed;
@@ -223,7 +225,7 @@
   padding: 60px 24px 40px;
 }
 
-.lightbox-close {
+.lightboxClose {
   position: fixed;
   top: 20px;
   right: 24px;
@@ -241,7 +243,7 @@
   z-index: 1;
 }
 
-.lightbox-img {
+.lightboxImg {
   max-width: 90vw;
   max-height: 90vh;
   object-fit: contain;
@@ -250,7 +252,7 @@
   cursor: default;
 }
 
-.lightbox-img-scroll {
+.lightboxImgScroll {
   display: block;
   margin: 0 auto;
   width: 100%;

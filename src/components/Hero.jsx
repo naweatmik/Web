@@ -26,60 +26,56 @@ export default function Hero() {
   }
 
   return (
-    <div ref={heroRef} className="hero-wrapper">
-      <div className="hero-sticky">
+    <div ref={heroRef} className="heroWrapper">
+      <div className="heroSticky">
 
-        {/* SVG 마스크 정의 */}
-        <svg className="hero-svg">
+        <svg className="heroSvg">
           <defs>
             <mask id="hero-glass-mask">
               <g ref={maskGRef} style={{ transform: 'translateY(56vh)' }}>
                 <text x="50%" y="50%" textAnchor="middle" dominantBaseline="central"
-                  fill="white" className="hero-text hero-svg-line-top" style={svgTextStyle}>We are</text>
+                  fill="white" className="heroText heroSvgLineTop" style={svgTextStyle}>We are</text>
                 <text x="50%" y="50%" textAnchor="middle" dominantBaseline="central"
-                  fill="white" className="hero-text" style={svgTextStyle}>Creative</text>
+                  fill="white" className="heroText" style={svgTextStyle}>Creative</text>
                 <text x="50%" y="50%" textAnchor="middle" dominantBaseline="central"
-                  fill="white" className="hero-text hero-svg-line-bottom" style={svgTextStyle}>Designers</text>
+                  fill="white" className="heroText heroSvgLineBottom" style={svgTextStyle}>Designers</text>
               </g>
             </mask>
           </defs>
         </svg>
 
-        {/* Frosted glass 레이어 */}
         <div
-          className="hero-mask-layer"
+          className="heroMaskLayer"
           style={{
             WebkitMask: 'url(#hero-glass-mask)',
             mask: 'url(#hero-glass-mask)',
           }}
         >
-          <div className="hero-img-wrap hero-mask-center">
+          <div className="heroImgWrap heroMaskCenter">
             <img
               src={`${import.meta.env.BASE_URL}kv.png`}
               alt=""
-              className="hero-kv-blurred"
+              className="heroKvBlurred"
               draggable={false}
             />
           </div>
         </div>
 
-        {/* HTML 텍스트 */}
         <div
           ref={textDivRef}
-          className="hero-text-layer"
+          className="heroTextLayer"
           style={{ transform: 'translateY(56vh)' }}
         >
-          <span className="hero-text">We are</span>
-          <span className="hero-text">Creative</span>
-          <span className="hero-text">Designers</span>
+          <span className="heroText">We are</span>
+          <span className="heroText">Creative</span>
+          <span className="heroText">Designers</span>
         </div>
 
-        {/* 원본 이미지 */}
-        <div className="hero-img-wrap hero-kv-original-wrap">
+        <div className="heroImgWrap heroKvOriginalWrap">
           <img
             src={`${import.meta.env.BASE_URL}kv.png`}
             alt=""
-            className="hero-kv-original"
+            className="heroKvOriginal"
             draggable={false}
           />
         </div>
