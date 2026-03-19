@@ -33,8 +33,8 @@ export default function Hero() {
 
     const animate = () => {
       const m = mouseRef.current
-      m.tx += (m.x * 10 - m.tx) * 0.04
-      m.ty += (m.y * 7  - m.ty) * 0.04
+      m.tx += (m.x * 28 - m.tx) * 0.04
+      m.ty += (m.y * 18 - m.ty) * 0.04
 
       if (imgWrapRef.current) {
         const scale = imgScale.get()

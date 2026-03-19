@@ -51,8 +51,8 @@ function FilterTabs({ active, onChange }) {
   )
 }
 
-function Card({ item, index, isWork, onCardClick }) {
-  const tilt        = TILTS[index % TILTS.length]
+function Card({ item, index, isWork, onCardClick, tiltEnabled }) {
+  const tilt        = tiltEnabled ? TILTS[index % TILTS.length] : 0
   const aspectRatio = ASPECTS[index % 5]
   const num  = String(index + 1).padStart(2, '0')
   const catLabel = CATEGORIES.find(c => c.key === item.category)?.label || item.category || ''
@@ -67,6 +67,34 @@ function Card({ item, index, isWork, onCardClick }) {
     app:    { background: '#a855f7', color: '#fff', borderColor: '#a855f7' },
     detail: { background: '#ec4899', color: '#fff', borderColor: '#ec4899' },
   }[item.category] || { background: '#1A1A1A', color: 'rgba(255,255,255,0.7)', borderColor: 'rgba(255,255,255,0.15)' }
+
+  if (!tiltEnabled) {
+    return (
+      <div
+        onClick={() => isWork && onCardClick(item)}
+        style={{
+          cursor: isWork ? 'pointer' : 'default',
+          borderRadius: '12px',
+          overflow: 'hidden',
+          position: 'relative',
+          aspectRatio: '4/3',
+          background: isWork ? '#111' : item.grad,
+        }}
+      >
+        {isWork && (
+          <img
+            src={item.image_url}
+            alt={item.title || ''}
+            style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }}
+            loading="lazy"
+          />
+        )}
+        <span className="galleryCardNum">{num}</span>
+        <div className="galleryCardBadge" style={badgeStyle}>{catLabel}</div>
+        <div className="galleryCardTitle">{isWork ? (item.title || '') : item.title}</div>
+      </div>
+    )
+  }
 
   return (
     <motion.div
@@ -156,6 +184,16 @@ function Lightbox({ src, scrollable, onClose }) {
 
 const PER_PAGE = 10  // 5카드 주기 × 2 = 행 완성
 
+function useIsDesktop() {
+  const [isDesktop, setIsDesktop] = useState(() => window.innerWidth > 1024)
+  useEffect(() => {
+    const handler = () => setIsDesktop(window.innerWidth > 1024)
+    window.addEventListener('resize', handler, { passive: true })
+    return () => window.removeEventListener('resize', handler)
+  }, [])
+  return isDesktop
+}
+
 export default function Gallery() {
   const [works, setWorks]     = useState([])
   const [loading, setLoading] = useState(true)
@@ -163,6 +201,7 @@ export default function Gallery() {
   const [page, setPage]       = useState(1)
   const [lightbox, setLightbox] = useState(null)
   const topRef = useRef(null)
+  const isDesktop = useIsDesktop()
 
   useEffect(() => {
     if (!isSupabaseReady) { setLoading(false); return }
@@ -219,9 +258,9 @@ export default function Gallery() {
       </div>
 
       <div className="galleryTiltGrid">
-        <AnimatePresence mode="wait">
+        <AnimatePresence>
           {paged.map((item, i) => (
-            <Card key={item.id} item={item} index={i} isWork={isWork} onCardClick={handleCardClick} />
+            <Card key={item.id} item={item} index={i} isWork={isWork} onCardClick={handleCardClick} tiltEnabled={isDesktop} />
           ))}
         </AnimatePresence>
       </div>
