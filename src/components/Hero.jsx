@@ -1,22 +1,60 @@
 import './Hero.css'
-import { useRef } from 'react'
-import { useScroll, useTransform, useMotionValueEvent } from 'framer-motion'
+import { useRef, useEffect, useState } from 'react'
+import { useScroll, useTransform, useMotionValueEvent, motion, AnimatePresence } from 'framer-motion'
 
 export default function Hero() {
   const heroRef    = useRef(null)
   const maskGRef   = useRef(null)
   const textDivRef = useRef(null)
+  const imgWrapRef = useRef(null)
+  const mouseRef   = useRef({ x: 0, y: 0, tx: 0, ty: 0 })
+  const rafRef     = useRef(null)
 
   const { scrollYProgress } = useScroll({
     target: heroRef,
     offset: ['start start', 'end end'],
   })
 
-  const textYVh = useTransform(scrollYProgress, [0, 0.6], [56, 0])
+  const textYVh  = useTransform(scrollYProgress, [0, 0.6], [56, 0])
+  const imgScale = useTransform(scrollYProgress, [0, 0.8], [1, 1.18])
 
   useMotionValueEvent(textYVh, 'change', (v) => {
     if (maskGRef.current)   maskGRef.current.style.transform   = `translateY(${v}vh)`
     if (textDivRef.current) textDivRef.current.style.transform = `translateY(${v}vh)`
+  })
+
+  // RAF 하나로 패럴랙스 + 스케일 통합 — 충돌 없음
+  useEffect(() => {
+    const onMove = (e) => {
+      mouseRef.current.x = (e.clientX / window.innerWidth  - 0.5) * 2
+      mouseRef.current.y = (e.clientY / window.innerHeight - 0.5) * 2
+    }
+    window.addEventListener('mousemove', onMove, { passive: true })
+
+    const animate = () => {
+      const m = mouseRef.current
+      m.tx += (m.x * 18 - m.tx) * 0.06
+      m.ty += (m.y * 12 - m.ty) * 0.06
+
+      if (imgWrapRef.current) {
+        const scale = imgScale.get()
+        imgWrapRef.current.style.transform =
+          `translate3d(calc(-50% + ${m.tx}px), calc(-50% + ${m.ty}px), 0) scale(${scale})`
+      }
+      rafRef.current = requestAnimationFrame(animate)
+    }
+    rafRef.current = requestAnimationFrame(animate)
+
+    return () => {
+      window.removeEventListener('mousemove', onMove)
+      cancelAnimationFrame(rafRef.current)
+    }
+  }, [imgScale])
+
+  const [showScroll, setShowScroll] = useState(true)
+
+  useMotionValueEvent(scrollYProgress, 'change', (v) => {
+    setShowScroll(v < 0.04)
   })
 
   const svgTextStyle = {
@@ -71,7 +109,7 @@ export default function Hero() {
           <span className="heroText">Designers</span>
         </div>
 
-        <div className="heroImgWrap heroKvOriginalWrap">
+        <div ref={imgWrapRef} className="heroImgWrap heroKvOriginalWrap">
           <img
             src={`${import.meta.env.BASE_URL}kv.png`}
             alt=""
@@ -79,6 +117,25 @@ export default function Hero() {
             draggable={false}
           />
         </div>
+
+        <AnimatePresence>
+          {showScroll && (
+            <motion.div
+              className="heroScrollIndicator"
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: 10 }}
+              transition={{ delay: 1.2, duration: 0.6 }}
+            >
+              <motion.div
+                className="heroScrollChevron"
+                animate={{ y: [0, 8, 0] }}
+                transition={{ duration: 1.4, repeat: Infinity, ease: 'easeInOut' }}
+              />
+              <span className="heroScrollLabel">SCROLL</span>
+            </motion.div>
+          )}
+        </AnimatePresence>
 
       </div>
     </div>
