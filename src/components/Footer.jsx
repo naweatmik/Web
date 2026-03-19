@@ -14,7 +14,7 @@ export default function Footer() {
 
   return (
     <footer className="siteFooter">
-      <div className="footerInner">
+<div className="footerInner">
 
         <motion.div
           className="footerCta"

@@ -31,14 +31,25 @@ export default function Header() {
     return () => window.removeEventListener('scroll', onScroll)
   }, [])
 
-  const scrollToTop = () => window.scrollTo({ top: 0, behavior: 'smooth' })
+  const scrolling = useRef(false)
+
+  const scrollToTop = () => {
+    if (scrolling.current) return
+    scrolling.current = true
+    window.scrollTo({ top: 0, behavior: 'smooth' })
+    setTimeout(() => { scrolling.current = false }, 800)
+  }
 
   const handleNavClick = (href) => {
     setMenuOpen(false)
-    setTimeout(() => {
-      const el = document.querySelector(href)
-      if (el) el.scrollIntoView({ behavior: 'smooth' })
-    }, 100)
+    if (scrolling.current) return
+    scrolling.current = true
+    const el = document.querySelector(href)
+    if (el) {
+      const top = el.getBoundingClientRect().top + window.scrollY - 72
+      window.scrollTo({ top, behavior: 'smooth' })
+    }
+    setTimeout(() => { scrolling.current = false }, 1000)
   }
 
   return (

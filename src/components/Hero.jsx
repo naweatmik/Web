@@ -33,8 +33,8 @@ export default function Hero() {
 
     const animate = () => {
       const m = mouseRef.current
-      m.tx += (m.x * 18 - m.tx) * 0.06
-      m.ty += (m.y * 12 - m.ty) * 0.06
+      m.tx += (m.x * 10 - m.tx) * 0.04
+      m.ty += (m.y * 7  - m.ty) * 0.04
 
       if (imgWrapRef.current) {
         const scale = imgScale.get()
@@ -58,7 +58,7 @@ export default function Hero() {
   }
 
   return (
-    <div ref={heroRef} className="heroWrapper">
+    <div ref={heroRef} className="heroWrapper" style={{ position: 'relative' }}>
       <div className="heroSticky">
 
         <svg className="heroSvg">

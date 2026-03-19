@@ -1,95 +1,100 @@
-import { useRef, useEffect, useState, useMemo } from 'react'
-import { Canvas, useFrame } from '@react-three/fiber'
+import { useRef, useEffect, useMemo, Suspense } from 'react'
+import { Canvas, useFrame, useLoader } from '@react-three/fiber'
 import { useGLTF, useAnimations, OrbitControls, Environment, ContactShadows } from '@react-three/drei'
+import { FBXLoader } from 'three/examples/jsm/loaders/FBXLoader.js'
 import { SkeletonUtils } from 'three-stdlib'
+import * as THREE from 'three'
 
-export const MALE_URL   = 'https://threejs.org/examples/models/gltf/Soldier.glb'
-export const FEMALE_URL = 'https://threejs.org/examples/models/gltf/Michelle.glb'
+export const MALE_URL   = `${import.meta.env.BASE_URL}models/GangnamStyle.fbx`
+export const FEMALE_URL = `${import.meta.env.BASE_URL}models/HipHopDancing.fbx`
 
-// 애니메이션 우선순위: 활동적인 것부터
-const ACTIVE_PRIORITY  = /run|dance|walk|jump|wave/i
-const IDLE_PRIORITY    = /idle|tpose/i
+const ACTIVE_PRIORITY = /run|dance|walk|jump|wave|sitting|angry/i
 
-function pickAnim(names, pattern) {
-  return names.find(n => pattern.test(n))
-}
+function GLBCharacter({ modelUrl, baseRotation }) {
+  const outer = useRef()
+  const root  = useRef()
 
-function Character({ modelUrl, hovered, baseRotation = Math.PI }) {
-  const group   = useRef()
   const { scene, animations } = useGLTF(modelUrl)
-  const cloned  = useMemo(() => SkeletonUtils.clone(scene), [scene])
-  const { actions, names } = useAnimations(animations, group)
-  const [current, setCurrent] = useState(null)
+  const cloned = useMemo(() => SkeletonUtils.clone(scene), [scene])
 
-  // 초기 애니메이션 — 활동적인 것 우선
+  const { actions, names } = useAnimations(animations, root)
+
+  useMemo(() => {
+    const box    = new THREE.Box3().setFromObject(cloned)
+    const size   = new THREE.Vector3()
+    const center = new THREE.Vector3()
+    box.getSize(size)
+    box.getCenter(center)
+    const maxDim = Math.max(size.x, size.y, size.z)
+    if (maxDim <= 0 || !isFinite(maxDim)) return
+    const scale  = 1.8 / maxDim
+    cloned.scale.setScalar(scale)
+    cloned.position.set(-center.x * scale, -box.min.y * scale, -center.z * scale)
+  }, [cloned])
+
   useEffect(() => {
     if (!names.length) return
-    const first = pickAnim(names, ACTIVE_PRIORITY) ?? names[0]
+    const first = names.find(n => ACTIVE_PRIORITY.test(n)) ?? names[0]
     actions[first]?.play()
-    setCurrent(first)
   }, [actions, names])
 
-  // 호버 시 다른 활동 애니메이션으로 전환
-  useEffect(() => {
-    if (!current || !names.length) return
-    const active = pickAnim(names, ACTIVE_PRIORITY)
-    const all    = names.filter(n => !IDLE_PRIORITY.test(n))
-    // 호버: 현재와 다른 활동 애니메이션으로 순환
-    const next = hovered
-      ? (all.find(n => n !== current) ?? active ?? current)
-      : (active ?? current)
-    if (!next || next === current) return
-    actions[current]?.fadeOut(0.35)
-    actions[next]?.reset().fadeIn(0.35).play()
-    setCurrent(next)
-  }, [hovered]) // eslint-disable-line
-
-  // 앞을 보면서 살짝 좌우 스웨이
   useFrame((state) => {
-    if (group.current) {
-      group.current.rotation.y = baseRotation + Math.sin(state.clock.elapsedTime * 0.4) * 0.18
-    }
+    if (outer.current)
+      outer.current.rotation.y = baseRotation + Math.sin(state.clock.elapsedTime * 0.4) * 0.18
   })
 
   return (
-    <group ref={group} position={[0, -0.9, 0]} scale={1.1}>
-      <primitive object={cloned} />
+    <group ref={outer} position={[0, -0.9, 0]}>
+      <primitive ref={root} object={cloned} />
+    </group>
+  )
+}
+
+function FBXCharacter({ modelUrl, baseRotation }) {
+  const group = useRef()
+  const fbx   = useLoader(FBXLoader, modelUrl)
+  const { actions, names } = useAnimations(fbx.animations, group)
+
+  useEffect(() => {
+    if (!names.length) return
+    actions[names[0]]?.reset().play()
+  }, [actions, names])
+
+  useFrame((state) => {
+    if (group.current)
+      group.current.rotation.y = baseRotation + Math.sin(state.clock.elapsedTime * 0.4) * 0.18
+  })
+
+  return (
+    <group ref={group} position={[0, -1.2, 0]} scale={0.017}>
+      <primitive object={fbx} />
     </group>
   )
 }
 
 export default function InstructorModel({ modelUrl = MALE_URL, accent = '#9333ea', baseRotation = Math.PI }) {
-  const [hovered, setHovered] = useState(false)
+  const isFBX = modelUrl.toLowerCase().endsWith('.fbx')
 
   return (
-    <div
-      className="instructorModelWrap"
-      onMouseEnter={() => setHovered(true)}
-      onMouseLeave={() => setHovered(false)}
-    >
+    <div className="instructorModelWrap">
       <Canvas
-        camera={{ position: [0, 0.6, 3.8], fov: 42 }}
-        gl={{ alpha: true, antialias: true, powerPreference: 'high-performance' }}
-        dpr={[1, 1.5]}
+        camera={{ position: [0, 0.5, 5.5], fov: 46 }}
+        gl={{ alpha: true, antialias: false, powerPreference: 'high-performance' }}
+        dpr={1}
         style={{ width: '100%', height: '100%', background: 'transparent' }}
       >
-        <ambientLight intensity={0.6} />
-        <directionalLight position={[4, 8, 4]} intensity={1.6} castShadow />
-        <pointLight position={[-3, 3, -1]} intensity={2}   color={accent} />
-        <pointLight position={[3, 1, 2]}   intensity={1}   color="#60a5fa" />
+        <ambientLight intensity={0.8} />
+        <directionalLight position={[4, 8, 4]} intensity={1.6} />
+        <pointLight position={[-3, 3, -1]} intensity={2} color={accent} />
 
-        <Character modelUrl={modelUrl} hovered={hovered} baseRotation={baseRotation} />
-
-        <ContactShadows
-          position={[0, -0.9, 0]}
-          opacity={0.35}
-          scale={3}
-          blur={2}
-          far={1.5}
-        />
+        <Suspense fallback={null}>
+          {isFBX
+            ? <FBXCharacter modelUrl={modelUrl} baseRotation={baseRotation} />
+            : <GLBCharacter modelUrl={modelUrl} baseRotation={baseRotation} />
+          }
+        </Suspense>
 
         <Environment preset="city" background={false} />
-
         <OrbitControls
           enableZoom={false}
           enablePan={false}
@@ -99,12 +104,8 @@ export default function InstructorModel({ modelUrl = MALE_URL, accent = '#9333ea
         />
       </Canvas>
 
-      <div className="instructorModelHint">
-        {hovered ? '✨' : '드래그로 회전'}
-      </div>
+      <div className="instructorModelHint">드래그로 회전</div>
     </div>
   )
 }
 
-useGLTF.preload(MALE_URL)
-useGLTF.preload(FEMALE_URL)

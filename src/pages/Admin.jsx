@@ -566,9 +566,38 @@ function InstructorCard({ instructor, index, onDelete, onSaved }) {
   const [saving, setSaving] = useState(false)
   const [error, setError] = useState('')
   const [success, setSuccess] = useState('')
+  const [modelUrl, setModelUrl] = useState(instructor.model_url || '')
+  const [modelUploading, setModelUploading] = useState(false)
+  const modelInputRef = useState(null)
 
   function update(field, val) {
     setForm((prev) => ({ ...prev, [field]: val }))
+  }
+
+  async function handleModelUpload(e) {
+    const file = e.target.files[0]
+    if (!file) return
+    setModelUploading(true)
+    try {
+      const fileName = `${Date.now()}_${file.name.replace(/\s+/g, '')}`
+      const { error: uploadError } = await supabase.storage
+        .from('models')
+        .upload(fileName, file, { contentType: 'application/octet-stream', upsert: true })
+      if (uploadError) throw uploadError
+      const { data: { publicUrl } } = supabase.storage.from('models').getPublicUrl(fileName)
+      if (instructor.id) {
+        const { error: dbError } = await supabase
+          .from('instructors').update({ model_url: publicUrl }).eq('id', instructor.id)
+        if (dbError) throw dbError
+      }
+      setModelUrl(publicUrl)
+      onSaved(instructor.id, { model_url: publicUrl })
+    } catch (err) {
+      alert('모델 업로드 실패: ' + err.message)
+    } finally {
+      setModelUploading(false)
+      e.target.value = ''
+    }
   }
 
   async function handleSave() {
@@ -584,7 +613,7 @@ function InstructorCard({ instructor, index, onDelete, onSaved }) {
         if (error) throw error
         onSaved(instructor.id, form)
       } else {
-        const nextSlot = Date.now() // 고유 slot 값으로 타임스탬프 사용
+        const nextSlot = Date.now()
         const { data, error } = await supabase
           .from('instructors')
           .insert({ slot: nextSlot, name: form.name, title: form.title, photo: form.photo })
@@ -643,6 +672,25 @@ function InstructorCard({ instructor, index, onDelete, onSaved }) {
           onError={(e) => { e.target.style.display = 'none' }}
         />
       )}
+      <Field label="3D 캐릭터 모션 (.fbx)">
+        <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+          <button
+            type="button"
+            onClick={() => modelInputRef[0]?.click()}
+            disabled={modelUploading || !instructor.id}
+            title={!instructor.id ? '먼저 강사 정보를 저장하세요' : ''}
+            style={{ ...S.btnPrimary, fontSize: 12, padding: '7px 14px', background: 'rgba(255,255,255,0.1)', color: '#fff', opacity: modelUploading || !instructor.id ? 0.5 : 1 }}
+          >
+            {modelUploading ? <Loader2 size={12} style={{ animation: 'spin 1s linear infinite' }} /> : <Upload size={12} />}
+            {modelUploading ? '업로드 중...' : 'FBX 업로드'}
+          </button>
+          <span style={{ fontSize: 11, color: modelUrl ? '#4ade80' : 'rgba(255,255,255,0.25)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', maxWidth: 140 }}>
+            {modelUrl ? decodeURIComponent(modelUrl.split('/').pop().replace(/^\d+_/, '')) : '미설정'}
+          </span>
+        </div>
+        <input type="file" accept=".fbx" style={{ display: 'none' }}
+          ref={(el) => { modelInputRef[0] = el }} onChange={handleModelUpload} />
+      </Field>
       <Msg error={error} success={success} />
       <button
         onClick={handleSave}

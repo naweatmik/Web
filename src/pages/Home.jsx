@@ -210,7 +210,7 @@ export default function Home() {
           <div className="csOrb5" />
           <div className="csTopLine" />
         </div>
-        <div className="container" style={{ maxWidth: 'none' }}>
+        <div className="container" style={{ maxWidth: '1600px' }}>
           <CurriculumFlow />
         </div>
       </section>
@@ -243,9 +243,9 @@ export default function Home() {
                 <span className="instructorCard3dNum">0{idx + 1}</span>
                 <div className="instructorCard3dModel">
                   <InstructorModel
-                  modelUrl={idx === 0 ? MALE_URL : FEMALE_URL}
+                  modelUrl={person.model_url || (idx === 0 ? MALE_URL : FEMALE_URL)}
                   accent={idx === 0 ? '#9333ea' : '#ec4899'}
-                  baseRotation={idx === 0 ? Math.PI : 0}
+                  baseRotation={0}
                 />
                 </div>
                 <div className="instructorCard3dInfo">

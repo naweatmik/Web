@@ -1,5 +1,5 @@
 import './Gallery.css'
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { supabase, isSupabaseReady } from '../lib/supabase'
 
@@ -162,6 +162,7 @@ export default function Gallery() {
   const [active, setActive]   = useState('all')
   const [page, setPage]       = useState(1)
   const [lightbox, setLightbox] = useState(null)
+  const topRef = useRef(null)
 
   useEffect(() => {
     if (!isSupabaseReady) { setLoading(false); return }
@@ -185,7 +186,15 @@ export default function Gallery() {
     setLightbox({ src: item.image_url, scrollable: false })
   }
 
-  const handleCategory = (key) => { setActive(key); setPage(1) }
+  const scrollToTop = () => {
+    if (topRef.current) {
+      const top = topRef.current.getBoundingClientRect().top + window.scrollY - 90
+      window.scrollTo({ top, behavior: 'smooth' })
+    }
+  }
+
+  const handleCategory = (key) => { setActive(key); setPage(1); scrollToTop() }
+  const handlePage = (n) => { setPage(n); scrollToTop() }
 
   const source   = works.length > 0 ? works : placeholders
   const isWork   = works.length > 0
@@ -204,18 +213,18 @@ export default function Gallery() {
   }
 
   return (
-    <div>
+    <div ref={topRef}>
       <div style={{ padding: '0 clamp(24px, 5vw, 80px)' }}>
         <FilterTabs active={active} onChange={handleCategory} />
       </div>
 
-      <motion.div layout transition={{ duration: 0.35, ease: [0.22, 1, 0.36, 1] }} className="galleryTiltGrid">
-        <AnimatePresence mode="sync">
+      <div className="galleryTiltGrid">
+        <AnimatePresence mode="wait">
           {paged.map((item, i) => (
             <Card key={item.id} item={item} index={i} isWork={isWork} onCardClick={handleCardClick} />
           ))}
         </AnimatePresence>
-      </motion.div>
+      </div>
 
       {filtered.length === 0 && (
         <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="galleryEmpty">
@@ -226,7 +235,7 @@ export default function Gallery() {
       {total >= 1 && (
         <div className="galleryPagination">
           <button
-            onClick={() => setPage(p => Math.max(1, p - 1))}
+            onClick={() => handlePage(Math.max(1, page - 1))}
             disabled={page === 1}
             className="galleryPageBtn"
           >‹</button>
@@ -234,13 +243,13 @@ export default function Gallery() {
           {Array.from({ length: total }, (_, i) => i + 1).map(n => (
             <button
               key={n}
-              onClick={() => setPage(n)}
+              onClick={() => handlePage(n)}
               className={`galleryPageNum${page === n ? ' active' : ''}`}
             >{n}</button>
           ))}
 
           <button
-            onClick={() => setPage(p => Math.min(total, p + 1))}
+            onClick={() => handlePage(Math.min(total, page + 1))}
             disabled={page === total}
             className="galleryPageBtn"
           >›</button>

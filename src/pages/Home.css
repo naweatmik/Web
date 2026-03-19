@@ -229,7 +229,7 @@
 }
 .compHeaderAspect,
 .compHeaderWeb,
-.compHeaderPrint { font-size: 10px; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; }
+.compHeaderPrint { font-size: 13px; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; }
 .compHeaderAspect { color: rgba(255,255,255,0.3); }
 .compHeaderWeb    { color: #60a5fa; }
 .compHeaderPrint  { color: rgba(255,255,255,0.35); }
@@ -245,9 +245,9 @@
 }
 .compRow:nth-child(even) { background: rgba(255,255,255,0.025); }
 
-.compCellAspect { font-size: 11px; font-weight: 600; color: rgba(255,255,255,0.3); letter-spacing: 0.04em; word-break: keep-all; }
-.compCellWeb    { font-size: 12px; font-weight: 600; color: #ffffff; line-height: 1.6; word-break: keep-all; }
-.compCellPrint  { font-size: 12px; font-weight: 400; color: rgba(255,255,255,0.4); line-height: 1.6; word-break: keep-all; }
+.compCellAspect { font-size: 14px; font-weight: 600; color: rgba(255,255,255,0.3); letter-spacing: 0.04em; word-break: keep-all; }
+.compCellWeb    { font-size: 15px; font-weight: 600; color: #ffffff; line-height: 1.6; word-break: keep-all; }
+.compCellPrint  { font-size: 15px; font-weight: 400; color: rgba(255,255,255,0.4); line-height: 1.6; word-break: keep-all; }
 
 /* COLOR ORB DIVIDER */
 
@@ -329,7 +329,7 @@
   background: #000000;
   padding: clamp(80px, 14vw, 120px) 0;
   position: relative;
-  overflow: hidden;
+  overflow: visible;
 }
 
 .instructorCanvas {
@@ -395,7 +395,7 @@
   flex: 1;
   min-height: clamp(320px, 40vw, 520px);
   position: relative;
-  overflow: hidden;
+  overflow: visible;
 }
 
 .instructorCard3dInfo {
@@ -450,11 +450,12 @@
   .instructorCard3dModel { min-height: 280px; }
 }
 
+
 /* WORKS SECTION */
 
 .worksSection {
   background: #000000;
-  padding-bottom: clamp(140px, 20vw, 320px);
+  padding-bottom: 220px;
   position: relative;
   overflow: hidden;
 }
