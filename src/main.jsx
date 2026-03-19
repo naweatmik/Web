@@ -13,6 +13,13 @@ console.warn = (...args) => {
   _warn(...args)
 }
 
+const _log = console.log.bind(console)
+console.log = (...args) => {
+  const msg = typeof args[0] === 'string' ? args[0] : ''
+  if (msg.includes('[vite]')) return
+  _log(...args)
+}
+
 createRoot(document.getElementById('root')).render(
   <StrictMode>
     <App />

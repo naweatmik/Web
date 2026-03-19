@@ -44,7 +44,7 @@
 }
 
 .footerCtaHeading {
-  font-family: 'Inter', 'Pretendard', sans-serif;
+  font-family: 'Pretendard', sans-serif;
   font-size: clamp(1.4rem, 3vw, 2.2rem);
   font-weight: 800;
   color: #0A0A0A;
@@ -216,7 +216,7 @@
 }
 
 .footerWordmarkText {
-  font-family: 'Inter', 'Pretendard', sans-serif;
+  font-family: 'Pretendard', sans-serif;
   font-size: 14vw;
   font-weight: 900;
   letter-spacing: -0.04em;

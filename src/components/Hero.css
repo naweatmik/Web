@@ -133,7 +133,7 @@
 /* HERO TEXT */
 
 .heroText {
-  font-family: 'Inter', 'Pretendard', sans-serif;
+  font-family: 'Pretendard', sans-serif;
   font-size: 12vw;
   font-weight: 900;
   line-height: 0.9;
@@ -188,7 +188,7 @@
 }
 
 .heroScrollLabel {
-  font-family: 'Inter', sans-serif;
+  font-family: 'Pretendard', sans-serif;
   font-size: 9px;
   font-weight: 600;
   letter-spacing: 0.25em;
