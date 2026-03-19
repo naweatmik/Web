@@ -1,6 +1,6 @@
 import './Hero.css'
-import { useRef, useEffect, useState } from 'react'
-import { useScroll, useTransform, useMotionValueEvent, motion, AnimatePresence } from 'framer-motion'
+import { useRef, useEffect } from 'react'
+import { useScroll, useTransform, useMotionValueEvent } from 'framer-motion'
 
 export default function Hero() {
   const heroRef    = useRef(null)
@@ -50,12 +50,6 @@ export default function Hero() {
       cancelAnimationFrame(rafRef.current)
     }
   }, [imgScale])
-
-  const [showScroll, setShowScroll] = useState(true)
-
-  useMotionValueEvent(scrollYProgress, 'change', (v) => {
-    setShowScroll(v < 0.04)
-  })
 
   const svgTextStyle = {
     fontFamily: 'Inter, Pretendard, sans-serif',
@@ -118,24 +112,6 @@ export default function Hero() {
           />
         </div>
 
-        <AnimatePresence>
-          {showScroll && (
-            <motion.div
-              className="heroScrollIndicator"
-              initial={{ opacity: 0, y: 10 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: 10 }}
-              transition={{ delay: 1.2, duration: 0.6 }}
-            >
-              <motion.div
-                className="heroScrollChevron"
-                animate={{ y: [0, 8, 0] }}
-                transition={{ duration: 1.4, repeat: Infinity, ease: 'easeInOut' }}
-              />
-              <span className="heroScrollLabel">SCROLL</span>
-            </motion.div>
-          )}
-        </AnimatePresence>
 
       </div>
     </div>
