@@ -106,7 +106,7 @@ const CAT_COLOR = { web: '#3b82f6', app: '#a855f7', detail: '#10b981' }
 
 function WorkCard({ work, onDelete, onSaved }) {
   const [editing, setEditing] = useState(false)
-  const [form, setForm] = useState({ category: work.category || 'web', link: work.link || '' })
+  const [form, setForm] = useState({ category: work.category || 'web', link: work.link || '', student_name: work.student_name || '', company: work.company || '' })
   const [saving, setSaving] = useState(false)
   const [imgUploading, setImgUploading] = useState(false)
   const [imgHover, setImgHover] = useState(false)
@@ -119,11 +119,11 @@ function WorkCard({ work, onDelete, onSaved }) {
     try {
       const { error } = await supabase
         .from('works')
-        .update({ category: form.category, link: form.link || null })
+        .update({ category: form.category, link: form.link || null, student_name: form.student_name || null, company: form.company || null })
         .eq('id', work.id)
       if (error) throw error
       setEditing(false)
-      onSaved(work.id, { category: form.category, link: form.link || null })
+      onSaved(work.id, { category: form.category, link: form.link || null, student_name: form.student_name || null, company: form.company || null })
     } catch (err) {
       alert('저장 실패: ' + err.message)
     } finally {
@@ -132,7 +132,7 @@ function WorkCard({ work, onDelete, onSaved }) {
   }
 
   function handleCancel() {
-    setForm({ category: work.category || 'web', link: work.link || '' })
+    setForm({ category: work.category || 'web', link: work.link || '', student_name: work.student_name || '', company: work.company || '' })
     setEditing(false)
   }
 
@@ -309,6 +309,20 @@ function WorkCard({ work, onDelete, onSaved }) {
             </div>
           )}
 
+          <input
+            type="text"
+            placeholder="학생 이름 (선택)"
+            value={form.student_name}
+            onChange={(e) => setForm(p => ({ ...p, student_name: e.target.value }))}
+            style={{ ...S.input, fontSize: 13, padding: '7px 10px', marginBottom: 8 }}
+          />
+          <input
+            type="text"
+            placeholder="취업처 (선택)"
+            value={form.company}
+            onChange={(e) => setForm(p => ({ ...p, company: e.target.value }))}
+            style={{ ...S.input, fontSize: 13, padding: '7px 10px', marginBottom: 8 }}
+          />
           <div style={{ display: 'flex', gap: 6 }}>
             <button onClick={handleSave} disabled={saving}
               style={{ ...S.btnPrimary, fontSize: 12, padding: '6px 12px', flex: 1, justifyContent: 'center', opacity: saving ? 0.5 : 1 }}>
@@ -322,6 +336,16 @@ function WorkCard({ work, onDelete, onSaved }) {
         </div>
       ) : (
         <div style={{ padding: '10px 12px' }}>
+          {(work.student_name || work.company) && (
+            <div style={{ marginBottom: 6 }}>
+              {work.student_name && (
+                <span style={{ fontSize: 12, fontWeight: 700, color: 'rgba(255,255,255,0.8)', display: 'block' }}>{work.student_name}</span>
+              )}
+              {work.company && (
+                <span style={{ fontSize: 11, color: '#4ade80', display: 'block' }}>→ {work.company}</span>
+              )}
+            </div>
+          )}
           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 4 }}>
             {work.link
               ? <a href={work.link} target="_blank" rel="noopener noreferrer"
@@ -351,6 +375,8 @@ function WorksTab() {
   const [category, setCategory] = useState('web')
   const [link, setLink] = useState('')
   const [pdfFile, setPdfFile] = useState(null)
+  const [studentName, setStudentName] = useState('')
+  const [company, setCompany] = useState('')
   const [uploading, setUploading] = useState(false)
   const [error, setError] = useState('')
   const [success, setSuccess] = useState('')
@@ -409,7 +435,7 @@ function WorksTab() {
 
       const { error: dbError } = await supabase
         .from('works')
-        .insert({ image_url: publicUrl, category, link: finalLink })
+        .insert({ image_url: publicUrl, category, link: finalLink, student_name: studentName || null, company: company || null })
       if (dbError) throw dbError
 
       setSuccess('등록 완료!')
@@ -417,6 +443,8 @@ function WorksTab() {
       setCategory('web')
       setLink('')
       setPdfFile(null)
+      setStudentName('')
+      setCompany('')
       e.target.reset()
       fetchWorks()
     } catch (err) {
@@ -503,6 +531,24 @@ function WorksTab() {
               />
             </Field>
           )}
+          <Field label="학생 이름 (선택)">
+            <input
+              type="text"
+              placeholder="홍길동"
+              value={studentName}
+              onChange={(e) => setStudentName(e.target.value)}
+              style={S.input}
+            />
+          </Field>
+          <Field label="취업처 (선택)">
+            <input
+              type="text"
+              placeholder="(주)회사명"
+              value={company}
+              onChange={(e) => setCompany(e.target.value)}
+              style={S.input}
+            />
+          </Field>
           <Msg error={error} success={success} />
           <button
             type="submit"

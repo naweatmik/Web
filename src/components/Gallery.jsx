@@ -68,6 +68,32 @@ function Card({ item, index, isWork, onCardClick, tiltEnabled }) {
     detail: { background: '#ec4899', color: '#fff', borderColor: '#ec4899' },
   }[item.category] || { background: '#1A1A1A', color: 'rgba(255,255,255,0.7)', borderColor: 'rgba(255,255,255,0.15)' }
 
+  const hasMeta = isWork && (item.student_name || item.company)
+  const titleBottom = hasMeta ? 58 : 22
+
+  const metaRow = hasMeta && (
+    <div style={{ position: 'absolute', bottom: 14, left: 18, right: 18, display: 'flex', flexDirection: 'column', gap: 3, zIndex: 2 }}>
+      {item.student_name && (
+        <div style={{ display: 'flex', alignItems: 'center', gap: 5 }}>
+          <span style={{ fontFamily: "'Pretendard', sans-serif", fontSize: 10, fontWeight: 600, color: 'rgba(255,255,255,0.5)', textShadow: '0 1px 4px rgba(0,0,0,0.9)', whiteSpace: 'nowrap' }}>학생</span>
+          <span style={{ fontFamily: "'Pretendard', sans-serif", fontSize: 10, color: 'rgba(255,255,255,0.4)', textShadow: '0 1px 4px rgba(0,0,0,0.9)' }}>:</span>
+          <span style={{ fontFamily: "'Pretendard', sans-serif", fontSize: 12, fontWeight: 700, color: '#fff', textShadow: '0 1px 6px rgba(0,0,0,0.9)', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{item.student_name}</span>
+        </div>
+      )}
+      {item.company && (
+        <div style={{ display: 'flex', alignItems: 'center', gap: 5 }}>
+          <span style={{ fontFamily: "'Pretendard', sans-serif", fontSize: 10, fontWeight: 600, color: 'rgba(255,255,255,0.5)', textShadow: '0 1px 4px rgba(0,0,0,0.9)', whiteSpace: 'nowrap' }}>취업처</span>
+          <span style={{ fontFamily: "'Pretendard', sans-serif", fontSize: 10, color: 'rgba(255,255,255,0.4)', textShadow: '0 1px 4px rgba(0,0,0,0.9)' }}>:</span>
+          <span style={{ fontFamily: "'Pretendard', sans-serif", fontSize: 12, fontWeight: 700, color: '#4ade80', textShadow: '0 1px 6px rgba(0,0,0,0.9)', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{item.company}</span>
+        </div>
+      )}
+    </div>
+  )
+
+  const gradientOverlay = hasMeta && (
+    <div style={{ position: 'absolute', bottom: 0, left: 0, right: 0, height: '55%', background: 'linear-gradient(to top, rgba(0,0,0,0.82) 0%, rgba(0,0,0,0.45) 50%, transparent 100%)', pointerEvents: 'none', zIndex: 1 }} />
+  )
+
   if (!tiltEnabled) {
     return (
       <div
@@ -89,9 +115,11 @@ function Card({ item, index, isWork, onCardClick, tiltEnabled }) {
             loading="lazy"
           />
         )}
+        {gradientOverlay}
         <span className="galleryCardNum">{num}</span>
         <div className="galleryCardBadge" style={badgeStyle}>{catLabel}</div>
-        <div className="galleryCardTitle">{isWork ? (item.title || '') : item.title}</div>
+        <div className="galleryCardTitle" style={{ bottom: titleBottom, zIndex: 2 }}>{isWork ? (item.title || '') : item.title}</div>
+        {metaRow}
       </div>
     )
   }
@@ -127,11 +155,13 @@ function Card({ item, index, isWork, onCardClick, tiltEnabled }) {
             loading="lazy"
           />
         )}
+        {gradientOverlay}
         <span className="galleryCardNum">{num}</span>
         <div className="galleryCardBadge" style={badgeStyle}>{catLabel}</div>
-        <div className="galleryCardTitle">
+        <div className="galleryCardTitle" style={{ bottom: titleBottom, zIndex: 2 }}>
           {isWork ? (item.title || '') : item.title}
         </div>
+        {metaRow}
       </div>
     </motion.div>
   )
