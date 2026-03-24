@@ -54,8 +54,6 @@ export default function Home() {
   useEffect(() => {
     if (!isSupabaseReady) return
 
-    supabase.from('page_views').insert({})
-
     supabase.from('instructors').select('*').order('slot', { ascending: true })
       .then(({ data }) => {
         if (data && data.length > 0)

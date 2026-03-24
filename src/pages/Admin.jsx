@@ -1276,7 +1276,6 @@ export default function Admin() {
   const [authError, setAuthError] = useState('')
   const [authLoading, setAuthLoading] = useState(false)
   const [activeTab, setActiveTab] = useState('works')
-  const [stats, setStats] = useState({ today: null, week: null, total: null })
 
   useEffect(() => {
     supabase.auth.getSession().then(({ data: { session } }) => setSession(session))
@@ -1286,26 +1285,6 @@ export default function Admin() {
     return () => subscription.unsubscribe()
   }, [])
 
-  useEffect(() => {
-    if (!session) return
-    async function fetchStats() {
-      const now = new Date()
-      const todayStart = new Date(now.getFullYear(), now.getMonth(), now.getDate()).toISOString()
-      const weekStart = new Date(now.getFullYear(), now.getMonth(), now.getDate() - 6).toISOString()
-
-      const [todayRes, weekRes, totalRes] = await Promise.all([
-        supabase.from('page_views').select('*', { count: 'exact', head: true }).gte('visited_at', todayStart),
-        supabase.from('page_views').select('*', { count: 'exact', head: true }).gte('visited_at', weekStart),
-        supabase.from('page_views').select('*', { count: 'exact', head: true }),
-      ])
-      setStats({
-        today: todayRes.count ?? 0,
-        week: weekRes.count ?? 0,
-        total: totalRes.count ?? 0,
-      })
-    }
-    fetchStats()
-  }, [session])
 
   async function handleLogin(e) {
     e.preventDefault()
@@ -1386,28 +1365,6 @@ export default function Admin() {
             <LogOut size={15} />
             로그아웃
           </button>
-        </div>
-
-        {/* 방문자 통계 */}
-        <div style={{ display: 'flex', gap: 12, marginBottom: 32, flexWrap: 'wrap' }}>
-          {[
-            { label: '오늘 방문자', value: stats.today, color: '#60a5fa' },
-            { label: '최근 7일', value: stats.week, color: '#a78bfa' },
-            { label: '전체 누계', value: stats.total, color: '#4ade80' },
-          ].map((s) => (
-            <div key={s.label} style={{
-              ...S.card,
-              flex: '1 1 120px',
-              minWidth: 120,
-              padding: '16px 20px',
-              borderTop: `3px solid ${s.color}`,
-            }}>
-              <p style={{ margin: '0 0 6px', fontSize: 11, fontWeight: 700, color: 'rgba(255,255,255,0.35)', textTransform: 'uppercase', letterSpacing: '0.05em' }}>{s.label}</p>
-              <p style={{ margin: 0, fontSize: 28, fontWeight: 900, color: s.value === null ? 'rgba(255,255,255,0.2)' : s.color, fontFamily: "'Inter', sans-serif" }}>
-                {s.value === null ? '—' : s.value.toLocaleString()}
-              </p>
-            </div>
-          ))}
         </div>
 
         {/* Tab bar */}

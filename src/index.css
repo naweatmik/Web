@@ -157,7 +157,7 @@ body {
   padding: 0 24px;
 }
 @media (min-width: 768px)  { .container { padding: 0 48px; } }
-@media (min-width: 1280px) { .container { padding: 0 80px; } }
+@media (min-width: 1280px) { .container { } }
 
 .section-dark  { background-color: #0A0A0A; padding: 200px 0; }
 .section-light { background-color: #ffffff;  padding: 200px 0; color: #0A0A0A; }
